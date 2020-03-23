@@ -82,7 +82,7 @@ private:
     std::vector<unsigned char> key;
     std::vector<unsigned char> pass;
     std::vector<unsigned char> user;
-    std::string incoming;
+    unsigned int next_read;
     int can_close;
 };
 

@@ -142,7 +142,7 @@ void Socks5Income::after_read(uv_stream_t *handle,
     if (!!(pThis->router))
     {
         auto ret = pThis->router->routing_and_answser(buf->base, nread);
-        LOG(INFO) << "Nothing to write to peer or delay to response." << ret << std::endl;
+        LOG(INFO) << "routing to socks5 stream  RET=" << ret << std::endl;
         if (ret != 0)
         {
             pThis->start_shutdown();

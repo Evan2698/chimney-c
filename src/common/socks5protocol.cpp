@@ -6,6 +6,7 @@
 
 Socks5Protocol::Socks5Protocol() : state(enum_Fresh), peer_state(enum_Fresh), can_close(0)
 {
+    next_read = 2000;
     memset(&client, 0, sizeof(client));
     LOG(INFO) << "Socks5Protocol  is created!!!!  Socks5Protocol::Socks5Protocol()" << std::endl;
 }
@@ -29,9 +30,7 @@ void Socks5Protocol::set_key(const std::vector<unsigned char> &ky)
 void Socks5Protocol::set_remote(Address a)
 {
     this->remote = a;
-     LOG(INFO) << "set remote proxy: " <<  a.toString() << std::endl;
-
-    
+    LOG(INFO) << "set remote proxy: " << a.toString() << std::endl;
 }
 
 static std::string format_enum(int a)
@@ -68,6 +67,7 @@ static std::string format_enum(int a)
 int Socks5Protocol::routing_and_answser(char *income, unsigned int len)
 {
 
+    LOG(INFO) << "ROUTING.." << ToHexEX(income, income + len) << " CURENT: " << format_enum(state);
     if (enum_Normal != state)
     {
         std::lock_guard<std::mutex> lock(_mutex);
@@ -113,7 +113,7 @@ int Socks5Protocol::routing_and_answser(char *income, unsigned int len)
     }
     else
     {
-        LOG(INFO) << "Current state: " << format_enum(state) << std::endl;
+        LOG(INFO) << "Current state: " << format_enum(state) << "  count=" << len << std::endl;
         std::vector<unsigned char> in(income, income + len);
         std::vector<unsigned char> out;
         this->method->Compress(in, this->key, out);
@@ -226,14 +226,17 @@ void Socks5Protocol::alloc_cb(uv_handle_t *handle,
                               uv_buf_t *buf)
 
 {
+    Socks5Protocol *pThis = (Socks5Protocol *)handle->data;
+    std::lock_guard<std::mutex> lck(pThis->_peer);
     buf->base = reinterpret_cast<char *>(MiniPool::get_instance().Alloc());
-    buf->len = MiniPool::get_instance().size() - 128;
+    buf->len = pThis->next_read;
 }
 
 void Socks5Protocol::after_read(uv_stream_t *handle,
                                 ssize_t nread,
                                 const uv_buf_t *buf)
 {
+
     BufferHolder holder(true);
     if (buf->base != NULL)
     {
@@ -256,7 +259,7 @@ void Socks5Protocol::after_read(uv_stream_t *handle,
     //--------------------------------------------------------------
     // nread > 0
     //--------------------------------------------------------------
-
+    LOG(INFO) << "PEER: content: " << ToHexEX(buf->base, buf->base + buf->len);
     if (pThis->peer_state != enum_Normal)
     {
         std::lock_guard<std::mutex> lock(pThis->_peer);
@@ -310,59 +313,52 @@ void Socks5Protocol::after_read(uv_stream_t *handle,
             auto bound = Address::FromSocks5CommandStream(cmds);
             pThis->Back_Local_Bound_Address(bound);
             pThis->peer_state = enum_Normal;
+            pThis->next_read = 4;
         }
     }
     else
     {
-        std::lock_guard<std::mutex> lock(pThis->_peer);
-        if (pThis->incoming.size() > 4)
-        {
-            auto &tmp = pThis->incoming;
-            auto len = ToInt(tmp.c_str());
-            if (tmp.size() >= len + 4)
-            {
-                std::vector<unsigned char> ll(tmp.begin() + 4, tmp.begin() + 4 + len);
-                auto xx = std::string(tmp.begin() + 4 + len, tmp.end());
-                pThis->incoming = xx;
-                std::vector<unsigned char> out;
-                auto ret = pThis->method->UnCompress(ll, pThis->key, out);
-                if (ret == 0)
-                {
-                    pThis->Back_Write(out);
-                }
-            }
-        }
-
         auto szBuffer = buf->base;
-        if (nread < 4)
+        std::lock_guard<std::mutex> lock(pThis->_peer);
+        if (4 == pThis->next_read)
         {
-            pThis->incoming.append(szBuffer, szBuffer + nread);
-            LOG(INFO) << "RECV BYTES: APPEND1 " << nread << std::endl;
-        }
-        else
-        {
-            auto len = ToInt(szBuffer);
-            LOG(INFO) << "require len: " << len << " bytes" << std::endl;
-            if (len + 4 <= nread)
+            if (nread != 4)
             {
-                std::vector<unsigned char> zip(szBuffer + 4, szBuffer + 4 + len);
-                std::vector<unsigned char> out;
-                auto ret = pThis->method->UnCompress(zip, pThis->key, out);
-                if (ret == 0)
-                {
-                    pThis->Back_Write(out);
-                }
-                if (nread > len + 4)
-                {
-                    pThis->incoming.append(szBuffer + 4 + len, szBuffer + nread);
-                    LOG(INFO) << "RECV BYTES: APPEND3 " << nread << std::endl;
-                }
+                LOG(ERROR) << "4 bytes need more!!! close this socket!!!" << std::endl;
+                pThis->start_shutdown();
+                return;
+            }
+            unsigned int next = ToInt(szBuffer);
+            if (next <= MiniPool::get_instance().size())
+            {
+                pThis->next_read = next;
+                LOG(INFO) << "Next read bytes: " << next << std::endl;
             }
             else
             {
-                pThis->incoming.append(szBuffer, szBuffer + nread);
-                LOG(INFO) << "RECV BYTES: APPEND2 " << nread << std::endl;
+                LOG(ERROR) << "can not read too long bytes!!!" << std::endl;
+                pThis->start_shutdown();
             }
+        }
+        else
+        {
+            if (pThis->next_read != nread)
+            {
+                LOG(ERROR) << "logic too complicated!!!" << std::endl;
+                pThis->start_shutdown();
+                return;
+            }
+            std::vector<unsigned char> zip(szBuffer, szBuffer + nread);
+            std::vector<unsigned char> out;
+            int ret = pThis->method->UnCompress(zip, pThis->key, out);
+            if (ret != 0)
+            {
+                LOG(ERROR) << "unzip failed!!!" << std::endl;
+                pThis->start_shutdown();
+                return;
+            }
+            pThis->Back_Write(out);
+            pThis->next_read = 4;
         }
     }
 }
@@ -390,18 +386,22 @@ void Socks5Protocol::Back_Write(std::vector<unsigned char> &out)
 
 unsigned int Socks5Protocol::ToInt(const char *sz)
 {
-    unsigned int hi = sz[0];
+    unsigned char *p = (unsigned char *)sz;
+
+    unsigned int hi = p[0];
     hi = hi << 24;
 
-    unsigned tmp = sz[1];
+    unsigned int tmp = p[1];
     tmp = tmp << 16;
     hi = hi | tmp;
 
-    tmp = sz[2];
+    tmp = p[2];
     tmp = tmp << 8;
     hi = hi | tmp;
 
-    hi = hi | sz[3];
+    hi = hi | p[3];
+
+    return hi;
 }
 std::string Socks5Protocol::ToBytes(unsigned int v)
 {

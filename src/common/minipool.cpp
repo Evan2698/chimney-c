@@ -3,7 +3,7 @@
 #include <glog/logging.h>
 
 static const unsigned int offset = 32; // offset for start | align
-static const int capacity = 30;        // full size
+static const int capacity = 50;        // full size
 static const int tail = 256;           //reserved
 unsigned char *MiniPool::Alloc()
 {

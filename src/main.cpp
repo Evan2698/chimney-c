@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     LOG(INFO) << "---------------------" << std::endl;
     LOG(INFO) << "L address:" << local.toString() << std::endl;
 
+
+
     auto key = make_sha1(keyW).value();
     auto hash = make_hmac(key, msg).value();
     LOG(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;

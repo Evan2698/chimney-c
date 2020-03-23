@@ -82,36 +82,36 @@
             }
         }
     },
+    __version = "2.3.1",
+    find_programver = {
+        ["/usr/bin/gcc"] = "7.4.0-1ubuntu1"
+    },
     ["net.ping"] = {
         ["gitee.com"] = 37,
         ["gitlab.com"] = 259,
         ["github.com"] = 65535
     },
-    find_programver = {
-        ["/usr/bin/gcc"] = "7.4.0-1ubuntu1"
-    },
-    __version = "2.3.1",
     ["detect.tools.gcc.has_flags"] = {
         ["/usr/bin/gcc_7.4.0-1ubuntu1"] = {
             ["--help"] = true,
-            ["-pie"] = true,
-            ["-c"] = true,
             ["-shared"] = true,
-            ["-v"] = true,
+            ["-c"] = true,
+            ["-pie"] = true,
+            ["-Xlinker"] = true,
             ["-o"] = true,
             ["-Xassembler"] = true,
-            ["-Xlinker"] = true,
-            ["-E"] = true,
+            ["-v"] = true,
+            ["-pass-exit-codes"] = true,
             ["-save-temps"] = true,
             ["-print-multiarch"] = true,
-            ["-pass-exit-codes"] = true,
+            ["-E"] = true,
             ["-pipe"] = true,
             ["-print-sysroot"] = true,
             ["--target-help"] = true,
             ["-dumpversion"] = true,
             ["-print-multi-lib"] = true,
             ["--param"] = true,
-            ["-S"] = true,
+            ["-print-multi-directory"] = true,
             ["-time"] = true,
             ["-print-search-dirs"] = true,
             ["-Xpreprocessor"] = true,
@@ -119,7 +119,7 @@
             ["-dumpspecs"] = true,
             ["-x"] = true,
             ["-B"] = true,
-            ["-print-multi-directory"] = true,
+            ["-S"] = true,
             ["-no-canonical-prefixes"] = true,
             ["-print-libgcc-file-name"] = true,
             ["-print-multi-os-directory"] = true,

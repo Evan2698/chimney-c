@@ -58,7 +58,7 @@ Socks5Income::Socks5Income() : parent(nullptr)
     hub = std::make_shared<WriteStreamHub>(this);
     name = generate_hex(16);
     ++object_counter;
-    this->router = ClientFactory::get_instance().build_client();
+    this->router = ClientFactory::get_instance()->build_client();
     LOG(INFO) << "Socks5Income ( " << name
               << " )is constructed! "
               << "All: " << object_counter << std::endl;
@@ -72,7 +72,7 @@ Socks5Income::~Socks5Income()
     memset(&stream, 0, sizeof(stream));
     --object_counter;
     LOG(INFO) << "Socks5Income ( " << name
-              << " )is constructed!"
+              << " )is destoried!"
               << " REST All:  " << object_counter << std::endl;
 }
 

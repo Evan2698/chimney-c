@@ -40,17 +40,9 @@ struct Socks5Protocol : public Protocol
     static std::string ToBytes(unsigned int n);
     virtual int query_status();
 
-    void set_user_pass(const std::vector<unsigned char> &u, const std::vector<unsigned char>& p){
-        this->user = u;
-        this->pass = p;
-    }
-    void set_key(const std::vector<unsigned char> &ky){
-        this->key = ky;
-    }
-
-    void set_remote(Address a){
-        this->remote = a;
-    }
+    void set_user_pass(const std::vector<unsigned char> &u, const std::vector<unsigned char>& p);
+    void set_key(const std::vector<unsigned char> &ky);
+    void set_remote(Address a);
 
 private:
     int init_client();

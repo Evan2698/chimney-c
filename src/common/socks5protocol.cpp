@@ -7,13 +7,31 @@
 Socks5Protocol::Socks5Protocol() : state(enum_Fresh), peer_state(enum_Fresh), can_close(0)
 {
     memset(&client, 0, sizeof(client));
-    LOG(INFO) << "Socks5Protocol" << std::endl;
+    LOG(INFO) << "Socks5Protocol  is created!!!!  Socks5Protocol::Socks5Protocol()" << std::endl;
 }
 
 Socks5Protocol::~Socks5Protocol()
 {
     memset(&client, 0, sizeof(client));
-    LOG(INFO) << "~Socks5Protocol" << std::endl;
+    LOG(INFO) << "~Socks5Protocol  Socks5Protocol::~Socks5Protocol()" << std::endl;
+}
+
+void Socks5Protocol::set_user_pass(const std::vector<unsigned char> &u, const std::vector<unsigned char> &p)
+{
+    this->user = u;
+    this->pass = p;
+}
+void Socks5Protocol::set_key(const std::vector<unsigned char> &ky)
+{
+    this->key = ky;
+}
+
+void Socks5Protocol::set_remote(Address a)
+{
+    this->remote = a;
+     LOG(INFO) << "set remote proxy: " <<  a.toString() << std::endl;
+
+    
 }
 
 static std::string format_enum(int a)
@@ -117,7 +135,7 @@ int Socks5Protocol::routing_and_answser(char *income, unsigned int len)
 
         uv_write_t *write_req = (uv_write_t *)malloc(sizeof(uv_write_t));
         write_req->data = buf;
-        uv_write(write_req, (uv_stream_t*)(&this->client), buf, 1, after_write_once);
+        uv_write(write_req, (uv_stream_t *)(&this->client), buf, 1, after_write_once);
     }
 
     return 0;
@@ -153,8 +171,10 @@ int Socks5Protocol::init_client()
         return ret;
     }
 
+    LOG(INFO) << "remote proxy; " << this->remote.toString() << std::endl;
+
     struct sockaddr_in req_addr = {0};
-    ret = uv_ip4_addr(remote.host().c_str(), remote.port(), &req_addr);
+    ret = uv_ip4_addr(this->remote.host().c_str(), this->remote.port(), &req_addr);
     if (ret != 0)
     {
         LOG(ERROR) << "initialize peer socket address failed, RET= " << ret << std::endl;

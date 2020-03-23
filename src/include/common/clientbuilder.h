@@ -12,12 +12,11 @@
 
 class ClientBuilder
 {
-private:
-    /* data */
-public:
+
+protected:
     ClientBuilder(/* args */) = default;
     virtual ~ClientBuilder() = default;
-
+public:
     virtual std::shared_ptr<Protocol> build_client() = 0;
 };
 

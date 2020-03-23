@@ -40,9 +40,9 @@ int main(int argc, char *argv[])
     LOG(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
     auto client = ClientFactory::get_instance();
-    client.set_key(key);
-    client.set_profile(hash, hash);
-    client.set_remote(remote);
+    client->set_key(key);
+    client->set_profile(hash, hash);
+    client->set_remote(remote);
 
     Socks5_uv server;
     auto ret = server.launch(local);

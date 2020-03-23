@@ -3,6 +3,7 @@
 #include "common/clientbuilder.h"
 #include <vector>
 #include "common/address.h"
+#include <mutex>
 
 struct ClientFactory : public ClientBuilder
 {
@@ -13,7 +14,7 @@ struct ClientFactory : public ClientBuilder
     void set_key(std::vector<unsigned char> key);
     void set_remote(Address a);
 
-    static ClientFactory &get_instance();
+    static ClientFactory *get_instance();
 
 private:
     ClientFactory();
@@ -22,7 +23,10 @@ private:
     std::vector<unsigned char> usr;
     std::vector<unsigned char> pwd;
     std::vector<unsigned char> ky;
-    Address addr;
+    Address proxy;
+    static ClientFactory *pinstance;
+    static std::mutex _mutext_;
+    
 };
 
 #endif

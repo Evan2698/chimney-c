@@ -11,9 +11,8 @@
 #include "config/config.h"
 #include "client/clientfactory.h"
 #include "privacy/privacy.h"
-#include "common/socksserver.h"
 #include "common/func.hpp"
-#include "privacy/chacha20.h"
+#include "common/socks5_uv.h"
 
 std::string get_my_path();
 client get_local_setting();
@@ -45,9 +44,10 @@ int main(int argc, char *argv[])
     client.set_profile(hash, hash);
     client.set_remote(remote);
 
-    Socks5Server server(client);
-    auto ret = server.init(local, settings.network);
+    Socks5_uv server;
+    auto ret = server.launch(local);
     LOG(INFO) << "server initialization result: " << ret << std::endl;
+    server.run();
 
     signal(SIGINT, [](int sig) -> void {
         LOG(INFO) << "signal " << sig << std::endl;

@@ -58,6 +58,13 @@ Address::Address(const std::array<unsigned char, 4> &host, unsigned short port)
     }
 }
 
+Address::Address(const Address & other)
+{
+    this->host_ = other.host_;
+    this->port_ = other.port_;
+    this->type_ = other.type_;
+}
+
 Address::Address(const std::array<unsigned char, 16> &host, unsigned short port)
     : type_(Type::unknown),
       host_(INET6_ADDRSTRLEN, '\0')

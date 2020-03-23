@@ -10,6 +10,8 @@
 #define G_ALL_MACRO_H_948XKDJGAIENAHGHAG
 #define UNREFERENCED_PARAMETER(p)  (p)
 
-#define BUFFER_SIZE_MAX       2304
+#define BUFFER_SIZE_MAX       2560
+
+
 
 #endif 

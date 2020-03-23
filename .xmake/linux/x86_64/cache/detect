@@ -1,0 +1,130 @@
+{
+    find_program = {
+        unzip = "/usr/bin/unzip",
+        ccache = false,
+        ping = "/bin/ping",
+        gzip = "/bin/gzip",
+        conan = "/home/evan/.local/bin/conan",
+        ["/usr/bin/gcc"] = "/usr/bin/gcc",
+        git = "/usr/bin/git",
+        tar = "/bin/tar",
+        nmap = false
+    },
+    ["lib.detect.has_flags"] = {
+        ["linux_x86_64_/usr/bin/gcc_7.4.0-1ubuntu1_cxx_cxflags__-MMD -MF"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.4.0-1ubuntu1_cxx___-O0"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.4.0-1ubuntu1_cxx_cxflags__-fdiagnostics-color=always"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.4.0-1ubuntu1_cxx_cxflags__-fcolor-diagnostics"] = false
+    },
+    find_package_linux_x86_64_fetch_package_system_release = {
+        ["conan::libuv/1.31.0@bincrafters/stable"] = {
+            linkdirs = {
+                "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/lib"
+            },
+            links = {
+                "uv",
+                "pthread"
+            },
+            includedirs = {
+                "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/include"
+            }
+        },
+        ["conan::OpenSSL/1.1.1c@conan/stable"] = {
+            linkdirs = {
+                "/home/evan/.conan/data/OpenSSL/1.1.1c/conan/stable/package/b781af3f476d0aa5070a0a35b544db7a3c193cc8/lib",
+                "/home/evan/.conan/data/zlib/1.2.11/conan/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib"
+            },
+            links = {
+                "ssl",
+                "crypto",
+                "dl",
+                "pthread",
+                "z"
+            },
+            includedirs = {
+                "/home/evan/.conan/data/OpenSSL/1.1.1c/conan/stable/package/b781af3f476d0aa5070a0a35b544db7a3c193cc8/include",
+                "/home/evan/.conan/data/zlib/1.2.11/conan/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+            }
+        },
+        ["conan::glog/0.4.0@bincrafters/stable"] = {
+            linkdirs = {
+                "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/lib",
+                "/home/evan/.conan/data/libunwind/1.3.1/bincrafters/stable/package/bd803753563993002d34af5de35b3c1d24ec2fd2/lib",
+                "/home/evan/.conan/data/gflags/2.2.2/bincrafters/stable/package/3e7b9ab563f06710a41be695258dfb79c4103344/lib",
+                "/home/evan/.conan/data/xz_utils/5.2.4/_/_/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib"
+            },
+            links = {
+                "glog",
+                "unwind",
+                "unwind-coredump",
+                "unwind-generic",
+                "unwind-ptrace",
+                "unwind-setjmp",
+                "unwind-x86_64",
+                "gflags_nothreads",
+                "pthread",
+                "m",
+                "lzma"
+            },
+            defines = {
+                "LZMA_API_STATIC"
+            },
+            includedirs = {
+                "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/include",
+                "/home/evan/.conan/data/libunwind/1.3.1/bincrafters/stable/package/bd803753563993002d34af5de35b3c1d24ec2fd2/include",
+                "/home/evan/.conan/data/gflags/2.2.2/bincrafters/stable/package/3e7b9ab563f06710a41be695258dfb79c4103344/include",
+                "/home/evan/.conan/data/xz_utils/5.2.4/_/_/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+            }
+        },
+        ["conan::rapidjson/1.1.0@bincrafters/stable"] = {
+            includedirs = {
+                "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
+            }
+        }
+    },
+    ["net.ping"] = {
+        ["gitee.com"] = 37,
+        ["gitlab.com"] = 259,
+        ["github.com"] = 65535
+    },
+    find_programver = {
+        ["/usr/bin/gcc"] = "7.4.0-1ubuntu1"
+    },
+    __version = "2.3.1",
+    ["detect.tools.gcc.has_flags"] = {
+        ["/usr/bin/gcc_7.4.0-1ubuntu1"] = {
+            ["--help"] = true,
+            ["-pie"] = true,
+            ["-c"] = true,
+            ["-shared"] = true,
+            ["-v"] = true,
+            ["-o"] = true,
+            ["-Xassembler"] = true,
+            ["-Xlinker"] = true,
+            ["-E"] = true,
+            ["-save-temps"] = true,
+            ["-print-multiarch"] = true,
+            ["-pass-exit-codes"] = true,
+            ["-pipe"] = true,
+            ["-print-sysroot"] = true,
+            ["--target-help"] = true,
+            ["-dumpversion"] = true,
+            ["-print-multi-lib"] = true,
+            ["--param"] = true,
+            ["-S"] = true,
+            ["-time"] = true,
+            ["-print-search-dirs"] = true,
+            ["-Xpreprocessor"] = true,
+            ["--version"] = true,
+            ["-dumpspecs"] = true,
+            ["-x"] = true,
+            ["-B"] = true,
+            ["-print-multi-directory"] = true,
+            ["-no-canonical-prefixes"] = true,
+            ["-print-libgcc-file-name"] = true,
+            ["-print-multi-os-directory"] = true,
+            ["-print-sysroot-headers-suffix"] = true,
+            ["-dumpmachine"] = true
+        }
+    }
+}

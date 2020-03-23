@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include",
+                "/home/evan/.conan/data/gflags/2.2.2/bincrafters/stable/package/3e7b9ab563f06710a41be695258dfb79c4103344/include",
+                "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/include",
+                "/home/evan/.conan/data/OpenSSL/1.1.1c/conan/stable/package/b781af3f476d0aa5070a0a35b544db7a3c193cc8/include",
+                "/home/evan/.conan/data/libev/4.27/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include",
+                "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/include",
+                "${workspaceFolder}/src/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

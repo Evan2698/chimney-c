@@ -31,6 +31,7 @@ std::string ToHexEX(T begin, T end)
 	}
 
 	return hex.str();
+	//return std::string("");
 }
 
 #endif

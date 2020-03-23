@@ -7,7 +7,7 @@
 struct ClientFactory : public ClientBuilder
 {
     virtual ~ClientFactory();
-    virtual int delegate_to_client(int fd);
+    virtual std::shared_ptr<Protocol> build_client();
 
     void set_profile(std::vector<unsigned char> user, std::vector<unsigned char> pass);
     void set_key(std::vector<unsigned char> key);

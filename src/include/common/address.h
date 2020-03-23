@@ -51,6 +51,8 @@ public:
 
      Address(const std::string h, unsigned short port, Type t);
 
+     Address(const Address & other);
+
     /**
        Factory constructor,
        host can be ipv4 or ipv6 address, or domain name

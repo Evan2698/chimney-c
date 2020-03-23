@@ -8,6 +8,7 @@
  ******************************************************************************/
 #ifndef CLIENT_BUILDER_H
 #define CLIENT_BUILDER_H
+#include "common/Protocol.h"
 
 class ClientBuilder
 {
@@ -17,7 +18,7 @@ public:
     ClientBuilder(/* args */) = default;
     virtual ~ClientBuilder() = default;
 
-    virtual int delegate_to_client(int fd) = 0;
+    virtual std::shared_ptr<Protocol> build_client() = 0;
 };
 
 #endif 

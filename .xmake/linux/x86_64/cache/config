@@ -1,0 +1,10 @@
+{
+    mtimes = {
+        ["xmake.lua"] = 1584870100
+    },
+    options_all = {
+        mode = "debug"
+    },
+    __version = "2.3.1",
+    ["options_chimney-c"] = ref("options_all")
+}

@@ -1,0 +1,92 @@
+{
+    rapidjson = {
+        includedirs = "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include",
+        __enabled = true,
+        __requirestr = "conan::rapidjson/1.1.0@bincrafters/stable",
+        __extrainfo = {
+            alias = "rapidjson"
+        }
+    },
+    glog = {
+        linkdirs = {
+            "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/lib",
+            "/home/evan/.conan/data/libunwind/1.3.1/bincrafters/stable/package/bd803753563993002d34af5de35b3c1d24ec2fd2/lib",
+            "/home/evan/.conan/data/gflags/2.2.2/bincrafters/stable/package/3e7b9ab563f06710a41be695258dfb79c4103344/lib",
+            "/home/evan/.conan/data/xz_utils/5.2.4/_/_/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib"
+        },
+        __enabled = true,
+        defines = "LZMA_API_STATIC",
+        __extrainfo = {
+            alias = "glog"
+        },
+        links = {
+            "glog",
+            "unwind",
+            "unwind-coredump",
+            "unwind-generic",
+            "unwind-ptrace",
+            "unwind-setjmp",
+            "unwind-x86_64",
+            "gflags_nothreads",
+            "pthread",
+            "m",
+            "lzma"
+        },
+        __requirestr = "conan::glog/0.4.0@bincrafters/stable",
+        includedirs = {
+            "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/include",
+            "/home/evan/.conan/data/libunwind/1.3.1/bincrafters/stable/package/bd803753563993002d34af5de35b3c1d24ec2fd2/include",
+            "/home/evan/.conan/data/gflags/2.2.2/bincrafters/stable/package/3e7b9ab563f06710a41be695258dfb79c4103344/include",
+            "/home/evan/.conan/data/xz_utils/5.2.4/_/_/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+        }
+    },
+    openssl = {
+        linkdirs = {
+            "/home/evan/.conan/data/OpenSSL/1.1.1c/conan/stable/package/b781af3f476d0aa5070a0a35b544db7a3c193cc8/lib",
+            "/home/evan/.conan/data/zlib/1.2.11/conan/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib"
+        },
+        __enabled = true,
+        __extrainfo = {
+            alias = "openssl"
+        },
+        links = {
+            "ssl",
+            "crypto",
+            "dl",
+            "pthread",
+            "z"
+        },
+        __requirestr = "conan::OpenSSL/1.1.1c@conan/stable",
+        includedirs = {
+            "/home/evan/.conan/data/OpenSSL/1.1.1c/conan/stable/package/b781af3f476d0aa5070a0a35b544db7a3c193cc8/include",
+            "/home/evan/.conan/data/zlib/1.2.11/conan/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+        }
+    },
+    libuv = {
+        linkdirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/lib",
+        __enabled = true,
+        __extrainfo = {
+            alias = "libuv"
+        },
+        links = {
+            "uv",
+            "pthread"
+        },
+        __requirestr = "conan::libuv/1.31.0@bincrafters/stable",
+        includedirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/include"
+    },
+    __version = "2.3.1",
+    libev = {
+        linkdirs = "/home/evan/.conan/data/libev/4.27/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib",
+        __enabled = true,
+        __extrainfo = {
+            alias = "libev"
+        },
+        links = {
+            "ev",
+            "m"
+        },
+        __requirestr = "conan::libev/4.27@bincrafters/stable",
+        includedirs = "/home/evan/.conan/data/libev/4.27/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+    }
+}

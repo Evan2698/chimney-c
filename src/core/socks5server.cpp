@@ -12,6 +12,7 @@ Socks5Server::Socks5Server(Address listening) : listen_address(listening), handl
 }
 Socks5Server::~Socks5Server()
 {
+    shutdown();
 }
 
 
@@ -307,4 +308,9 @@ int Socks5Server::run()
         std::thread server(Socks5Server::serve_on, p);
         server.detach();
     }
+}
+
+void Socks5Server::shutdown()
+{
+    close(handle);
 }

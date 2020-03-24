@@ -9,6 +9,8 @@ struct Socks5Server
 
     int run();
 
+    void shutdown();
+
 private:
     static void doServeOnOne(Stream * sp);
     static void serve_on(Stream * sp);
@@ -16,6 +18,7 @@ private:
 private:
     Address listen_address;
     int handle;
+
 };
 
 #endif

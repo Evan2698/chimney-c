@@ -66,6 +66,9 @@ int SocketBuilder::create_listening_socket(Address a, const std::string &network
     {
         fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
     }*/
+
+    int reuse = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     err = bind(fd, (struct sockaddr *)&address, sizeof(address));
     if (err < 0)
     {

@@ -20,7 +20,7 @@ std::string ToHex(T begin, T end)
 template <typename T>
 std::string ToHexEX(T begin, T end)
 {
-	static const char *chars = "0123456789ABCDEF";
+	/*static const char *chars = "0123456789ABCDEF";
 	std::stringstream hex;
 	for (auto it = begin; it != end; ++it)
 	{
@@ -30,8 +30,8 @@ std::string ToHexEX(T begin, T end)
         hex << " ";
 	}
 
-	return hex.str();
-	//return std::string("");
+	return hex.str();*/
+	return std::string("");
 }
 
 #endif

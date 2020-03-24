@@ -18,13 +18,15 @@
 
 std::string get_my_path();
 client get_local_setting();
-
+Socks5Server *g_p = nullptr;
 int main(int argc, char *argv[])
 {
 
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
-    google::SetStderrLogging(google::GLOG_INFO);
+    google::SetStderrLogging(google::GLOG_FATAL);
+    google::ShutdownGoogleLogging();
+
 
     auto settings = get_local_setting();
     std::string whereru = "WhereRU";
@@ -46,12 +48,15 @@ int main(int argc, char *argv[])
     client->set_user_pass(hash, hash);
     client->set_proxy(remote);
 
+   Socks5Server server(local);
+   g_p = &server;
     signal(SIGINT, [](int sig) -> void {
+        g_p->shutdown();
         LOG(INFO) << "signal " << sig << std::endl;
         exit(3);
     });
 
-    Socks5Server server(local);
+    
     auto ret = server.run();
 }
 

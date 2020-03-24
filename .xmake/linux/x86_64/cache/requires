@@ -1,11 +1,16 @@
 {
-    rapidjson = {
-        includedirs = "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include",
+    libuv = {
+        linkdirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/lib",
         __enabled = true,
-        __requirestr = "conan::rapidjson/1.1.0@bincrafters/stable",
         __extrainfo = {
-            alias = "rapidjson"
-        }
+            alias = "libuv"
+        },
+        links = {
+            "uv",
+            "pthread"
+        },
+        __requirestr = "conan::libuv/1.31.0@bincrafters/stable",
+        includedirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/include"
     },
     glog = {
         linkdirs = {
@@ -62,20 +67,6 @@
             "/home/evan/.conan/data/zlib/1.2.11/conan/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
         }
     },
-    libuv = {
-        linkdirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/lib",
-        __enabled = true,
-        __extrainfo = {
-            alias = "libuv"
-        },
-        links = {
-            "uv",
-            "pthread"
-        },
-        __requirestr = "conan::libuv/1.31.0@bincrafters/stable",
-        includedirs = "/home/evan/.conan/data/libuv/1.31.0/bincrafters/stable/package/6ae331b72e7e265ca2a3d1d8246faf73aa030238/include"
-    },
-    __version = "2.3.1",
     libev = {
         linkdirs = "/home/evan/.conan/data/libev/4.27/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib",
         __enabled = true,
@@ -88,5 +79,14 @@
         },
         __requirestr = "conan::libev/4.27@bincrafters/stable",
         includedirs = "/home/evan/.conan/data/libev/4.27/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+    },
+    __version = "2.3.1",
+    rapidjson = {
+        __requirestr = "conan::rapidjson/1.1.0@bincrafters/stable",
+        __enabled = true,
+        includedirs = "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include",
+        __extrainfo = {
+            alias = "rapidjson"
+        }
     }
 }

@@ -29,6 +29,8 @@ public:
     
     explicit Address(struct sockaddr *address);
 
+    Address(struct sockaddr_in *address);
+
     /**
        Constructor for IPv4 Raw Address,
        both host and port are in network byte orders
@@ -93,7 +95,7 @@ public:
     static std::shared_ptr<Address> FromSocks5CommandStream(const std::vector<unsigned char> &cmd);
 
     // Return bytes stream data
-   std::vector<unsigned char> PackSocks5Address();
+   std::vector<unsigned char> PackSocks5Address() const;
     
 private:
     // Whether the address is IPv4 address

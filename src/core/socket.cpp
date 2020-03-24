@@ -1,4 +1,4 @@
-#include "common/socket.h"
+#include "core/socket.h"
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <glog/logging.h>
@@ -31,6 +31,8 @@ int SocketBuilder::create_socket(Address a, const std::string &network)
         return -1;
     }
 
+    LOG(INFO) << "Connect success~";   
+
     return sock;
 }
 
@@ -60,10 +62,10 @@ int SocketBuilder::create_listening_socket(Address a, const std::string &network
         return -1;
     }
     auto fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd > 0)
+  /*  if (fd > 0)
     {
         fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
-    }
+    }*/
     err = bind(fd, (struct sockaddr *)&address, sizeof(address));
     if (err < 0)
     {

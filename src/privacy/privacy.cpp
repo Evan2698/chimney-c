@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <openssl/sha.h>
 #include <openssl/hmac.h>
-#include "common/func.hpp"
+#include "core/func.hpp"
 
 std::optional<std::shared_ptr<Privacy>> build_privacy_method(const std::vector<unsigned char> &bytes_stream)
 {

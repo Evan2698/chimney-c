@@ -1,6 +1,6 @@
 
 #include <glog/logging.h>
-#include "common/g.h"
+#include "core/g.h"
 #include <string>
 #include <vector>
 #include <string>
@@ -9,10 +9,12 @@
 #include <fstream>
 #include <iostream>
 #include "config/config.h"
-#include "client/clientfactory.h"
 #include "privacy/privacy.h"
-#include "common/func.hpp"
-#include "common/socks5_uv.h"
+#include "core/func.hpp"
+#include "core/address.h"
+#include "core/peerfactory.h"
+#include "core/socks5server.h"
+#include <signal.h>
 
 std::string get_my_path();
 client get_local_setting();
@@ -34,28 +36,23 @@ int main(int argc, char *argv[])
     LOG(INFO) << "---------------------" << std::endl;
     LOG(INFO) << "L address:" << local.toString() << std::endl;
 
-
-
     auto key = make_sha1(keyW).value();
     auto hash = make_hmac(key, msg).value();
     LOG(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
     LOG(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
-    auto client = ClientFactory::get_instance();
+    auto client = PeerFactory::get_instance();
     client->set_key(key);
-    client->set_profile(hash, hash);
-    client->set_remote(remote);
-
-    Socks5_uv server;
-    auto ret = server.launch(local);
-    LOG(INFO) << "server initialization result: " << ret << std::endl;
-    server.run();
+    client->set_user_pass(hash, hash);
+    client->set_proxy(remote);
 
     signal(SIGINT, [](int sig) -> void {
         LOG(INFO) << "signal " << sig << std::endl;
         exit(3);
     });
-    server.run();
+
+    Socks5Server server(local);
+    auto ret = server.run();
 }
 
 std::string get_my_path()

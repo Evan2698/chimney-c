@@ -11,6 +11,7 @@
 #define UNREFERENCED_PARAMETER(p)  (p)
 
 #define BUFFER_SIZE_MAX       2560
+#define BUFFER_SIZE_READ      2048
 
 
 

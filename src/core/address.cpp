@@ -7,17 +7,40 @@
  *
  ******************************************************************************/
 
-#include "common/address.h"
+#include "core/address.h"
 
 #include <assert.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <glog/logging.h>
-#include "common/func.hpp"
+#include "core/func.hpp"
 
 Address::Address()
     : type_(Type::unknown)
 {
+}
+
+Address::Address(struct sockaddr_in *address) : type_(Type::unknown)
+{
+    if (address->sin_family == AF_INET)
+    {
+        host_.resize(INET_ADDRSTRLEN, '\0');
+        if (::inet_ntop(AF_INET, &address->sin_addr, &host_[0], host_.size()) != nullptr)
+        {
+            type_ = Type::ipv4;
+            port_ = ntohs(address->sin_port);
+        }
+    }
+    else if (address->sin_family == AF_INET6)
+    {
+        auto sin = reinterpret_cast<sockaddr_in6 *>(address);
+        host_.resize(INET6_ADDRSTRLEN, '\0');
+        if (::inet_ntop(AF_INET6, &sin->sin6_addr, &host_[0], host_.size()) != nullptr)
+        {
+            type_ = Type::ipv6;
+            port_ = ntohs(sin->sin6_port);
+        }
+    }
 }
 
 Address::Address(struct sockaddr *address)
@@ -58,7 +81,7 @@ Address::Address(const std::array<unsigned char, 4> &host, unsigned short port)
     }
 }
 
-Address::Address(const Address & other)
+Address::Address(const Address &other)
 {
     this->host_ = other.host_;
     this->port_ = other.port_;
@@ -242,7 +265,7 @@ std::shared_ptr<Address> Address::FromSocks5CommandStream(const std::vector<unsi
     return address;
 }
 
-std::vector<unsigned char> Address::PackSocks5Address()
+std::vector<unsigned char> Address::PackSocks5Address() const
 {
     std::vector<unsigned char> out;
 

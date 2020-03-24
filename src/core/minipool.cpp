@@ -1,5 +1,5 @@
-#include "common/minipool.h"
-#include "common/g.h"
+#include "core/minipool.h"
+#include "core/g.h"
 #include <glog/logging.h>
 
 static const unsigned int offset = 32; // offset for start | align

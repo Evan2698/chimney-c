@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     loguru::g_colorlogtostderr = true;
 	loguru::g_preamble_uptime   = false;
 	loguru::g_preamble_thread   = false;
-    loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
+    //loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
 
 
 

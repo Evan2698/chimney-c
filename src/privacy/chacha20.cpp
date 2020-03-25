@@ -1,7 +1,7 @@
 #include "privacy/chacha20.h"
 #include <vector>
-#include "privacy/xchacha20.h"
 #include "core/g.h"
+#include <sodium.h>
 
 
 int ChaCha20::Compress(const std::vector<unsigned char> &in,
@@ -28,13 +28,18 @@ int ChaCha20::Compress(const std::vector<unsigned char> &in,
 
 
     out.resize(in.size());
-    XChaCha_ctx ctx;
-    uint8_t counter[8] = {0x0};   // 0 or 1,  for golang use 0, for Crypto++ use 1.
-    xchacha_keysetup(&ctx, key.data(), m_IV.data());
-    xchacha_set_counter(&ctx, counter);
-	xchacha_encrypt_bytes(&ctx, in.data(), out.data(), in.size());
 
-    return 0;
+    auto n = crypto_stream_xchacha20_xor(out.data(), in.data(),
+                                in.size(), m_IV.data(),
+                                key.data());
+
+    if (n != 0) 
+    {
+         LOG_S(ERROR) << "XChaCha20 call failed!!! " << std::endl;
+    }
+
+
+    return n;
 }
 
 int ChaCha20::UnCompress(const std::vector<unsigned char> &in,

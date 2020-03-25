@@ -2,19 +2,19 @@
 #include "privacy/raw.h"
 #include "privacy/gcm.h"
 #include "privacy/chacha20.h"
-#include <logfault/logfault.h>
 #include <sstream>
 #include <optional>
 #include <iomanip>
 #include "core/func.hpp"
 #include "privacy/xcha20_poly1305.h"
 #include "sodium.h"
+#include "core/g.h"
 
 std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const std::vector<unsigned char> &bytes_stream)
 {
 	if (bytes_stream.size() < 15)
 	{
-		LFLOG_ERROR << "can not create privacy method: " << bytes_stream.size();
+		LOG_S(ERROR) << "can not create privacy method: " << bytes_stream.size();
 		return std::nullopt;
 	}
 
@@ -24,22 +24,22 @@ std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const 
 	{
 	case 0x1234:
 		sp = std::shared_ptr<Privacy>(new GCM());
-		LFLOG_INFO << "GCM method:" << bytes_stream.size();
+		LOG_S(INFO) << "GCM method:" << bytes_stream.size();
 		break;
 
 	case 0x1235:
 		sp = std::shared_ptr<Privacy>(new ChaCha20());
-		LFLOG_INFO << "ChaCha20 method: " << bytes_stream.size();
+		LOG_S(INFO) << "ChaCha20 method: " << bytes_stream.size();
 		break;
 
 	case 0x1236:
 		sp = std::shared_ptr<Privacy>(new XChaCha20Poly1305());
-		LFLOG_INFO << "ChaCha20-POLY1305 method: " << bytes_stream.size();
+		LOG_S(INFO) << "ChaCha20-POLY1305 method: " << bytes_stream.size();
 		break;
 
 	case 0x1237:
 		sp = std::shared_ptr<Privacy>(new RawEncrypt());
-		LFLOG_INFO << "RAW method: " << bytes_stream.size();
+		LOG_S(INFO) << "RAW method: " << bytes_stream.size();
 		break;
 	default:
 		break;
@@ -50,7 +50,7 @@ std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const 
 		std::vector<unsigned char>::size_type len = bytes_stream[2];
 		if (3 + len != bytes_stream.size())
 		{
-			LFLOG_ERROR << "verify size failed!" << bytes_stream.size();
+			LOG_S(ERROR) << "verify size failed!" << bytes_stream.size();
 			return std::nullopt;
 		}
 		sp->SetIV(std::vector<unsigned char>(bytes_stream.begin() + 3, bytes_stream.end()));
@@ -73,7 +73,7 @@ std::optional<std::vector<unsigned char>> PrivacyBase::make_hmac(const std::vect
 								   key.data());
 	if (r != 0)
 	{
-		LFLOG_ERROR << "crypto_auth_hmacsha256 failed!" << r;
+		LOG_S(ERROR) << "crypto_auth_hmacsha256 failed!" << r;
 		return std::nullopt;
 	}
 	return out;

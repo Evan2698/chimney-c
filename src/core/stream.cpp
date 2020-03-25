@@ -1,7 +1,7 @@
 #include "core/stream.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <logfault/logfault.h>
+#include <loguru.hpp>
 #include <unistd.h>
 Stream::Stream(int h, Address l, Address r) : handle(h),
                                               local(l),

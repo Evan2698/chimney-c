@@ -1,6 +1,6 @@
 #include "privacy/xcha20_poly1305.h"
 #include "sodium.h"
-#include <logfault/logfault.h>
+#include "core/g.h"
 
 inline std::size_t alloSize(size_t o)
 {
@@ -13,19 +13,19 @@ int XChaCha20Poly1305::Compress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LFLOG_ERROR << "key size must be 32 bytes long. " << std::endl;
+        LOG_S(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 24)
     {
-        LFLOG_ERROR << "IV must be 24 bytes long. " << std::endl;
+        LOG_S(ERROR) << "IV must be 24 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LFLOG_ERROR << "input can not be empty. " << std::endl;
+        LOG_S(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 
@@ -38,7 +38,7 @@ int XChaCha20Poly1305::Compress(const std::vector<unsigned char> &in,
                                                         NULL, m_iv.data(), key.data());
     if (r != 0)
     {
-        LFLOG_ERROR << "crypto_aead_xchacha20poly1305_ietf_encrypt failed. " << r << std::endl;
+        LOG_S(ERROR) << "crypto_aead_xchacha20poly1305_ietf_encrypt failed. " << r << std::endl;
         return -4;
     }
 
@@ -52,19 +52,19 @@ int XChaCha20Poly1305::UnCompress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LFLOG_ERROR << "key size must be 32 bytes long. " << std::endl;
+        LOG_S(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 24)
     {
-        LFLOG_ERROR << "IV must be 24 bytes long. " << std::endl;
+        LOG_S(ERROR) << "IV must be 24 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LFLOG_ERROR << "input can not be empty. " << std::endl;
+        LOG_S(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 
@@ -78,7 +78,7 @@ int XChaCha20Poly1305::UnCompress(const std::vector<unsigned char> &in,
                                                         m_iv.data(), key.data());
     if (r != 0)
     {
-        LFLOG_ERROR << "crypto_aead_xchacha20poly1305_ietf_decrypt failed. " << r << std::endl;
+        LOG_S(ERROR) << "crypto_aead_xchacha20poly1305_ietf_decrypt failed. " << r << std::endl;
         return -4;
     }
 

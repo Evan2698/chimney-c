@@ -1,7 +1,8 @@
 #include "privacy/chacha20.h"
 #include <vector>
 #include "privacy/xchacha20.h"
-#include <logfault/logfault.h>
+#include "core/g.h"
+
 
 int ChaCha20::Compress(const std::vector<unsigned char> &in,
                        const std::vector<unsigned char> &key,
@@ -9,19 +10,19 @@ int ChaCha20::Compress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LFLOG_ERROR << "key size must be 32 bytes long. " << std::endl;
+        LOG_S(INFO) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_IV.size() != 24)
     {
-        LFLOG_ERROR << "IV must be 24 bytes long. " << std::endl;
+        LOG_S(ERROR) << "IV must be 24 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LFLOG_ERROR << "input can not be empty. " << std::endl;
+        LOG_S(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 

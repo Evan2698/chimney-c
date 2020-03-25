@@ -12,7 +12,6 @@
 
 #include <netinet/in.h>
 #include <stdint.h>
-
 #include <array>
 #include <iostream>
 #include <string>

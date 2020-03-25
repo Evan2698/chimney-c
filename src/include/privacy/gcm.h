@@ -32,7 +32,7 @@ struct GCM : public Privacy
      ~GCM() = default;
 
 private:
-     void aes_init();
+   static bool inited;
 
 private:
      std::vector<unsigned char> m_iv;

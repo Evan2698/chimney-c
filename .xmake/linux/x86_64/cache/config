@@ -1,9 +1,9 @@
 {
     mtimes = {
-        ["xmake.lua"] = 1585033951
+        ["xmake.lua"] = 1585065602
     },
     options_all = {
-        mode = "release"
+        mode = "debug"
     },
     __version = "2.3.1",
     ["options_chimney-c"] = ref("options_all")

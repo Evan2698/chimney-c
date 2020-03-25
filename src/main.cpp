@@ -17,7 +17,7 @@
 #include <signal.h>
 
 std::string get_my_path();
-client get_local_setting();
+std::shared_ptr<client>  get_local_setting();
 Socks5Server *g_p = nullptr;
 int main(int argc, char *argv[])
 {
@@ -25,21 +25,26 @@ int main(int argc, char *argv[])
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
     google::SetStderrLogging(google::GLOG_FATAL);
-    google::ShutdownGoogleLogging();
+    //google::ShutdownGoogleLogging();
 
 
     auto settings = get_local_setting();
+    if (!settings){
+        LOG(ERROR) << "config file is not exist!!!" << std::endl;
+        exit(1);
+    }
+
     std::string whereru = "WhereRU";
     std::vector<unsigned char> msg(whereru.begin(), whereru.end());
-    std::vector<unsigned char> keyW(settings.pwd.begin(), settings.pwd.end());
-    Address remote(settings.server, settings.server_port, Address::Type::ipv4);
-    Address local(settings.local, settings.local_port, Address::Type::ipv4);
+    std::vector<unsigned char> keyW(settings->pwd.begin(), settings->pwd.end());
+    Address remote(settings->server, settings->server_port, Address::Type::ipv4);
+    Address local(settings->local, settings->local_port, Address::Type::ipv4);
     LOG(INFO) << "S address:" << remote.toString() << std::endl;
     LOG(INFO) << "---------------------" << std::endl;
     LOG(INFO) << "L address:" << local.toString() << std::endl;
 
-    auto key = make_sha1(keyW).value();
-    auto hash = make_hmac(key, msg).value();
+    auto key = PrivacyBase::make_sha1(keyW).value();
+    auto hash = PrivacyBase::make_hmac(key, msg).value();
     LOG(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
     LOG(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
@@ -81,10 +86,14 @@ std::string get_my_path()
     return abs_path;
 }
 
-client get_local_setting()
+std::shared_ptr<client> get_local_setting()
 {
     auto path = get_my_path();
     path.append("/config.json");
+
+    if ( access(path.c_str(), F_OK ) != 0){
+        return nullptr;
+    }
 
     std::ifstream ifs(path);
     rapidjson::IStreamWrapper isw(ifs);
@@ -92,12 +101,12 @@ client get_local_setting()
     rapidjson::Document d;
     d.ParseStream(isw);
 
-    client c;
-    c.server_port = d["server_port"].GetInt();
-    c.server = d["server"].GetString();
-    c.local = d["local"].GetString();
-    c.local_port = d["local_port"].GetInt();
-    c.network = d["which"].GetString();
-    c.pwd = d["password"].GetString();
+    auto c= std::make_shared<client>();
+    c->server_port = d["server_port"].GetInt();
+    c->server = d["server"].GetString();
+    c->local = d["local"].GetString();
+    c->local_port = d["local_port"].GetInt();
+    c->network = d["which"].GetString();
+    c->pwd = d["password"].GetString();
     return c;
 }

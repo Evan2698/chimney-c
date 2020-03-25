@@ -41,7 +41,7 @@ int PeerFactory::sayHello(Stream * sp)
         return -1;
     }
     std::vector<unsigned char> ls(out.begin() + 3, out.begin() + 3 + out[2]);
-    auto op = build_privacy_method(ls);
+    auto op = PrivacyBase::build_privacy_method(ls);
     if (!op.has_value())
     {
         LOG(ERROR) << "parse method failed!!" << std::endl;
@@ -128,7 +128,7 @@ std::shared_ptr<Address> PeerFactory::doConnect(Stream *sp, const Address &targe
 
     if (tmp[0] != 0x5 || tmp[1] != 0 || tmp.size() < 10)
     {
-        LOG(ERROR) << "bound address format is invalid. " << std::endl;
+        LOG(ERROR) << "bound address format is invalid. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
         return bound;
     }
     

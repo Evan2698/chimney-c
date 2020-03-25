@@ -6,16 +6,23 @@
  * Copyright 2020 Evan . All rights reserved.
  *
  ******************************************************************************/
-
-#include <openssl/aes.h>
-#include <openssl/evp.h>
 #include <iostream>
 #include "privacy/gcm.h"
+#include <sodium.h>
+#include "glog/logging.h"
 
 inline std::size_t alloSize(size_t o)
 {
     return (((o >> 5) + 2) << 5) + 16;
 }
+
+static bool init()
+{
+    auto r = sodium_init();
+    return true;
+}
+
+bool GCM::inited = init();
 
 int GCM::Compress(const std::vector<unsigned char> &in,
                   const std::vector<unsigned char> &key,
@@ -23,24 +30,44 @@ int GCM::Compress(const std::vector<unsigned char> &in,
 {
 
     if (key.size() != 32)
+    {
+        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
-    if (m_iv.size() != 12)
-        return -2;
-    if (in.empty())
-        return -3;
+    }
 
-    aes_init();
+    if (m_iv.size() != 12)
+    {
+        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
+        return -2;
+    }
+
+    if (in.empty())
+    {
+        LOG(ERROR) << "input can not be empty. " << std::endl;
+        return -3;
+    }
+
+    if (!inited)
+    {
+        LOG(ERROR) << "WHY??? " << std::endl;
+        return -4;
+    }
+
+    if (crypto_aead_aes256gcm_is_available() == 0)
+    {
+        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        return -5;
+    }
+
     out.resize(alloSize(in.size()));
-    unsigned char tag[AES_BLOCK_SIZE];
-    int actual_size = 0, final_size = 0;
-    EVP_CIPHER_CTX *e_ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit(e_ctx, EVP_aes_256_gcm(), (const unsigned char *)key.data(), m_iv.data());
-    EVP_EncryptUpdate(e_ctx, &out[0], &actual_size, (const unsigned char *)in.data(), in.size());
-    EVP_EncryptFinal(e_ctx, &out[actual_size], &final_size);
-    EVP_CIPHER_CTX_ctrl(e_ctx, EVP_CTRL_GCM_GET_TAG, 16, tag);
-    std::copy(tag, tag + 16, &out[actual_size + final_size]);
-    out.resize(16 + actual_size + final_size);
-    EVP_CIPHER_CTX_free(e_ctx);
+
+    unsigned long long ciphertext_len = out.size();
+    crypto_aead_aes256gcm_encrypt(out.data(), &ciphertext_len,
+                                  in.data(), in.size(),
+                                  nullptr, 0,
+                                  nullptr, m_iv.data(), key.data());
+    out.resize(ciphertext_len);
+
     return 0;
 }
 
@@ -49,25 +76,45 @@ int GCM::UnCompress(const std::vector<unsigned char> &in,
                     std::vector<unsigned char> &out)
 {
     if (key.size() != 32)
+    {
+        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
+    }
+
     if (m_iv.size() != 12)
+    {
+        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
         return -2;
+    }
+
     if (in.empty())
+    {
+        LOG(ERROR) << "input can not be empty. " << std::endl;
         return -3;
+    }
 
-    aes_init();
+    if (!inited)
+    {
+        LOG(ERROR) << "WHY??? " << std::endl;
+        return -4;
+    }
 
-    unsigned char tag[AES_BLOCK_SIZE] = {0};
-    std::copy(in.begin() + (in.size() - 16), in.end(), tag);
-    out.resize(in.size());
-    int actual_size = 0, final_size = 0;
-    EVP_CIPHER_CTX *d_ctx = EVP_CIPHER_CTX_new();
-    EVP_DecryptInit(d_ctx, EVP_aes_256_gcm(), (const unsigned char *)key.data(), m_iv.data());
-    EVP_DecryptUpdate(d_ctx, &out[0], &actual_size, &in[0], in.size() - 16);
-    EVP_CIPHER_CTX_ctrl(d_ctx, EVP_CTRL_GCM_SET_TAG, 16, tag);
-    EVP_DecryptFinal(d_ctx, &out[actual_size], &final_size);
-    EVP_CIPHER_CTX_free(d_ctx);
-    out.resize(actual_size + final_size);
+    if (crypto_aead_aes256gcm_is_available() == 0)
+    {
+        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        return -5;
+    }
+
+    out.resize(alloSize(in.size()));
+
+    unsigned long long decrypted_len = out.size();
+    crypto_aead_aes256gcm_decrypt(out.data(), &decrypted_len,
+                                  nullptr,
+                                  in.data(), in.size(),
+                                  nullptr,
+                                  0,
+                                  m_iv.data(), key.data());
+    out.resize(decrypted_len);
 
     return 0;
 }
@@ -91,14 +138,4 @@ void GCM::SetIV(const std::vector<unsigned char> &iv)
 {
     m_iv.resize(iv.size());
     std::copy(iv.begin(), iv.end(), m_iv.begin());
-}
-
-void GCM::aes_init()
-{
-    static int init = 0;
-    if (init == 0)
-    {
-        OpenSSL_add_all_ciphers();
-        init = 1;
-    }
 }

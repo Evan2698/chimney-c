@@ -31,11 +31,17 @@ struct Privacy
     virtual ~Privacy() = default;
 };
 
-std::optional<std::shared_ptr<Privacy>> build_privacy_method(const std::vector<unsigned char> &bytes_stream);
-std::optional<std::vector<unsigned char> > make_hmac(const std::vector<unsigned char> &key, const std::vector<unsigned char> &msg );
-std::optional<std::vector<unsigned char> > make_sha256(const std::vector<unsigned char> &src);
-std::optional<std::vector<unsigned char> > make_sha1(const std::vector<unsigned char> &src);
+struct PrivacyBase
+{
 
+    static std::optional<std::shared_ptr<Privacy>> build_privacy_method(
+        const std::vector<unsigned char> &bytes_stream);
 
+    static std::optional<std::vector<unsigned char>> make_hmac(
+        const std::vector<unsigned char> &key, const std::vector<unsigned char> &msg);
+
+    static std::optional<std::vector<unsigned char>> make_sha1(
+        const std::vector<unsigned char> &src);
+};
 
 #endif

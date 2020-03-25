@@ -6,11 +6,11 @@
 #include <sstream>
 #include <optional>
 #include <iomanip>
-#include <openssl/sha.h>
-#include <openssl/hmac.h>
 #include "core/func.hpp"
+#include "privacy/xcha20_poly1305.h"
+#include "sodium.h"
 
-std::optional<std::shared_ptr<Privacy>> build_privacy_method(const std::vector<unsigned char> &bytes_stream)
+std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const std::vector<unsigned char> &bytes_stream)
 {
 	if (bytes_stream.size() < 15)
 	{
@@ -33,7 +33,7 @@ std::optional<std::shared_ptr<Privacy>> build_privacy_method(const std::vector<u
 		break;
 
 	case 0x1236:
-		/* TODO */
+		sp = std::shared_ptr<Privacy>(new XChaCha20Poly1305());
 		LOG(INFO) << "ChaCha20-POLY1305 method: " << bytes_stream.size();
 		break;
 
@@ -63,74 +63,27 @@ std::optional<std::shared_ptr<Privacy>> build_privacy_method(const std::vector<u
 	return sp;
 }
 
-std::optional<std::vector<unsigned char>> make_hmac(const std::vector<unsigned char> &key, const std::vector<unsigned char> &msg)
+std::optional<std::vector<unsigned char>> PrivacyBase::make_hmac(const std::vector<unsigned char> &key, const std::vector<unsigned char> &msg)
 {
-	unsigned char hash[128] = {0};
-	unsigned int len = 128;
+	std::vector<unsigned char> out(32, 0);
 
-	auto ctx = HMAC_CTX_new();
-	if (ctx == nullptr)
+	int r = crypto_auth_hmacsha256(out.data(),
+								   msg.data(),
+								   msg.size(),
+								   key.data());
+	if (r != 0)
 	{
+		LOG(ERROR) << "crypto_auth_hmacsha256 failed!" << r;
 		return std::nullopt;
 	}
-
-	if (!HMAC_Init_ex(ctx, key.data(), key.size(), EVP_sha256(), NULL))
-	{
-		HMAC_CTX_free(ctx);
-		return std::nullopt;
-	}
-
-	if (!HMAC_Update(ctx, msg.data(), msg.size()))
-	{
-		HMAC_CTX_free(ctx);
-		return std::nullopt;
-	}
-
-	if (!HMAC_Final(ctx, hash, &len))
-	{
-		HMAC_CTX_free(ctx);
-		return std::nullopt;
-	}
-
-	return std::vector<unsigned char>(std::begin(hash), std::begin(hash) + len);
+	return out;
 }
 
-std::optional<std::vector<unsigned char>> make_sha1(const std::vector<unsigned char> &src)
+static unsigned char sz_sha1_base[] = "E234V678A012N456I890O234V678U012";
+std::optional<std::vector<unsigned char>> PrivacyBase::make_sha1(const std::vector<unsigned char> &src)
 {
-	unsigned char szBuffer[SHA_DIGEST_LENGTH] = {0};
-	SHA_CTX context;
-	if (!SHA1_Init(&context))
-		return std::nullopt;
-
-	if (!SHA1_Update(&context, src.data(), src.size()))
-		return std::nullopt;
-
-	if (!SHA1_Final(szBuffer, &context))
-		return std::nullopt;
-
-	auto k = ToHex(std::begin(szBuffer), std::end(szBuffer));
-	if (k.size() > 32)
-	{
-		k.resize(32);
-	}
-
-	return std::vector<unsigned char>(k.begin(), k.end());
+	static std::vector<unsigned char> key(std::begin(sz_sha1_base), std::begin(sz_sha1_base)+32);
+	return make_hmac(key,src);	
 }
 
-std::optional<std::vector<unsigned char>> make_sha256(const std::vector<unsigned char> &src)
-{
-	unsigned char szBuffer[SHA256_DIGEST_LENGTH] = {0};
-	SHA256_CTX context;
-	if (!SHA256_Init(&context))
-		return std::nullopt;
 
-	if (!SHA256_Update(&context, src.data(), src.size()))
-		return std::nullopt;
-
-	if (!SHA256_Final(szBuffer, &context))
-		return std::nullopt;
-
-	auto k = ToHex(std::begin(szBuffer), std::end(szBuffer));
-
-	return std::vector<unsigned char>(k.begin(), k.end());
-}

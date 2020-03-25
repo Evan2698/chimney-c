@@ -1,4 +1,4 @@
-#include "core/socks5server.h"
+
 #include "core/socket.h"
 #include "core/address.h"
 #include "core/stream.h"
@@ -6,8 +6,12 @@
 #include "core/func.hpp"
 #include "core/peerfactory.h"
 #include "core/g.h"
-#include <loguru.hpp>
 #include <unistd.h>
+#include <netinet/in.h>
+#include "core/socks5server.h"
+#include "core/threadparameter.h"
+#include "core/objectholder.hpp"
+
 Socks5Server::Socks5Server(Address listening) : listen_address(listening), handle(0)
 {
 }
@@ -16,9 +20,7 @@ Socks5Server::~Socks5Server()
     shutdown();
 }
 
-
-
-static int sayHello(StreamHodler &sp)
+static int sayHello(std::shared_ptr<Stream> &sp)
 {
     std::vector<unsigned char> out(20, 0);
     int n = sp->Read(out);
@@ -50,26 +52,46 @@ static int sayHello(StreamHodler &sp)
     return n > 0 ? 0 : -1;
 }
 
-static Stream * doCommand(const std::vector<unsigned char> &input)
+static std::shared_ptr<ThreadParameter> doCommand(const std::vector<unsigned char> &input)
 {
-  
-    auto dest = Address::FromSocks5CommandStream(input);
-    if (!dest)
+
+    auto target = Address::FromSocks5CommandStream(input);
+    if (!target)
     {
-        LOG_S(INFO) << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
+        LOG_S(ERROR) << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
         return nullptr;
     }
-    return PeerFactory::get_instance()->build_peer_with_target(dest);
+
+    auto peer = PeerFactory::get_instance().build_socks5_peer();
+    if (!peer)
+    {
+        LOG_S(ERROR) << "Create Peer failed " << std::endl;
+        return nullptr;
+    }
+
+    auto s = peer->build_stream(target);
+    if (!s)
+    {
+        LOG_S(ERROR) << "create stream of peer failed " << std::endl;
+        return nullptr;
+    }
+
+    ObjectHolder<ThreadParameter> holder(new ThreadParameter());
+    holder->Dst = s;
+    holder->I = peer->get_Method();
+    holder->Key = peer->get_key();
+    auto sp = std::shared_ptr<ThreadParameter>(holder.detach());
+    return sp;
 }
 
-static int doConnect(StreamHodler &sp, StreamHodler &peer)
+static std::shared_ptr<ThreadParameter> doConnect(std::shared_ptr<Stream> &sp)
 {
     std::vector<unsigned char> out(256, 0);
     int n = sp->Read(out);
     if (n <= 0)
     {
         LOG_S(ERROR) << "read connect command failed" << n << std::endl;
-        return -1;
+        return nullptr;
     }
 
     LOG_S(INFO) << "client connect : >>> " << ToHexEX(out.begin(), out.end());
@@ -78,41 +100,39 @@ static int doConnect(StreamHodler &sp, StreamHodler &peer)
         unsigned char rsu[10] = {0x05, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
         LOG_S(ERROR) << "socks 5 command error" << std::endl;
-        return -1;
+        return nullptr;
     }
 
-    auto target = doCommand(std::vector<unsigned char>(out.begin() + 3, out.end()));
-    if (target == nullptr)
+    std::shared_ptr<ThreadParameter> parameter = doCommand(std::vector<unsigned char>(out.begin() + 3, out.end()));
+    if (!parameter)
     {
         unsigned char rsu[10] = {0x05, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
         LOG_S(ERROR) << "handle connect command failed" << std::endl;
-        return -1;
+        return nullptr;
     }
 
-    LOG_S(INFO) << "bound address" << target->get_local().toString() << std::endl;
+    LOG_S(INFO) << "bound address" << parameter->Dst->get_local().toString() << std::endl;
 
-    auto ss = target->get_local().PackSocks5Address();
+    auto ss = parameter->Dst->get_local().PackSocks5Address();
     if (ss.empty())
     {
-        delete target;
         unsigned char rsu[10] = {0x05, 0x0C, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
         LOG_S(ERROR) << "bound address format error" << std::endl;
-        return -1;
+        return nullptr;
     }
     n = sp->Write(ss);
     LOG_S(INFO) << "write bound address Reason:" << n << std::endl;
     if (0 >= n)
     {
-        delete target;
         LOG_S(ERROR) << "shake failed!!!!";
-        return -1;
+        return nullptr;
     }
 
-    peer.attach(target);
+    parameter->Src = sp;
 
-    return 0;
+    return parameter;
 }
 
 static unsigned int ToInt(unsigned char *sz)
@@ -136,11 +156,12 @@ static std::vector<unsigned char> ToBytes(unsigned int v)
     return nn;
 }
 
-static void proxy_read(StreamHodler &src,
-                       StreamHodler &dst,
-                       std::shared_ptr<Privacy> &I,
-                       const std::vector<unsigned char> &key)
+static void proxy_read(std::shared_ptr<ThreadParameter> & param)
 {
+    auto src = param->Src;
+    auto key = param->Key;
+    auto dst = param->Dst;
+    auto I = param->I;
 
     while (true)
     {
@@ -149,7 +170,7 @@ static void proxy_read(StreamHodler &src,
         if (n <= 0)
         {
             LOG_S(ERROR) << "Read failed!" << src->get_local().toString()
-                       << "<--->" << src->get_remote().toString() << " " << n;
+                         << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
 
@@ -169,17 +190,18 @@ static void proxy_read(StreamHodler &src,
         if (n <= 0)
         {
             LOG_S(ERROR) << "write failed:" << dst->get_local().toString()
-                       << "<--->" << dst->get_remote().toString() << " " << n;
+                         << "<--->" << dst->get_remote().toString() << " " << n;
             break;
         }
     }
 }
 
-static void proxy_write(StreamHodler  &src,
-                        StreamHodler &dst,
-                        std::shared_ptr<Privacy> &I,
-                        const std::vector<unsigned char> &key)
+static void proxy_write(std::shared_ptr<ThreadParameter> & param)
 {
+    auto src = param->Dst;
+    auto key = param->Key;
+    auto dst = param->Src;
+    auto I = param->I;
 
     while (true)
     {
@@ -188,7 +210,7 @@ static void proxy_write(StreamHodler  &src,
         if (n <= 0)
         {
             LOG_S(ERROR) << "Read  LEN failed!" << src->get_local().toString()
-                       << "<--->" << src->get_remote().toString() << " " << n;
+                         << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
 
@@ -203,7 +225,7 @@ static void proxy_write(StreamHodler  &src,
         if (n <= 0)
         {
             LOG_S(ERROR) << "Read conntent failed" << src->get_local().toString()
-                       << "<--->" << src->get_remote().toString() << " " << n;
+                         << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
         std::vector<unsigned char> tmp;
@@ -219,61 +241,38 @@ static void proxy_write(StreamHodler  &src,
         if (n <= 0)
         {
             LOG_S(ERROR) << "Write failed" << dst->get_local().toString()
-                       << "<--->" << dst->get_remote().toString() << "  " << n;
+                         << "<--->" << dst->get_remote().toString() << "  " << n;
             break;
         }
     }
 }
 
-struct write_param
+
+
+void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
 {
-    StreamHodler &src;
-    StreamHodler &dst;
-    write_param(StreamHodler &s, StreamHodler &d):
-    src(s),
-    dst(d)
-    {
-
-    }
-};
-
-static void help_func(write_param *p)
-{
-    if (p != nullptr)
-    {
-        proxy_write(p->src, p->dst,
-                    PeerFactory::get_instance()->getMethod(),
-                    PeerFactory::get_instance()->get_key());
-
-        delete p;
-    }
-}
-
-void Socks5Server::doServeOnOne(Stream *psrc)
-{
-    StreamHodler sp(psrc);
-    StreamHodler peer;
-
-    if (sayHello(sp) != 0)
+    if (sayHello(src) != 0)
         return;
 
-    if (doConnect(sp, peer) != 0)
+    auto param = doConnect(src);
+    if (!param )
+    {
+        LOG_S(ERROR) << "Prepare thread paramter failed!!" << std::endl;
         return;
+    } 
 
-    // for
-    auto pa = new write_param(peer, sp);
-    std::thread rt(help_func, pa);
+    if (!param->isValid()){
+        LOG_S(ERROR) << "thread paramter is invalid!" << std::endl;
+        return;
+    }
+  
+    std::thread xox([&param](){
+         proxy_write(param);
+    });
 
-    proxy_read(sp, peer,
-               PeerFactory::get_instance()->getMethod(),
-               PeerFactory::get_instance()->get_key());
-    rt.join();
+    proxy_read(param);
+    xox.join();
     LOG_S(INFO) << "OVER<====================>OVER" << std::endl;
-}
-
-void Socks5Server::serve_on(Stream *sp)
-{
-    doServeOnOne(sp);
 }
 
 int Socks5Server::run()
@@ -301,14 +300,22 @@ int Socks5Server::run()
         if (newFD == -1)
         {
             LOG_S(ERROR) << "Error while Accepting on socket\n";
-            continue;
+            break;
         }
-        struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
-        Address a(sin);
-        auto p = new Stream(newFD, a, this->listen_address);
-        std::thread server(Socks5Server::serve_on, p);
-        server.detach();
+        Address R((struct sockaddr_in *)&their_addr);
+        this->build_service_routine(newFD, R);
     }
+
+    return 0;
+}
+
+void Socks5Server::build_service_routine(int fd, Address &R)
+{
+    auto out = std::make_shared<Stream>(fd, listen_address, R);
+    std::thread wh([out]() {
+        doServeOnOne(out);
+    });
+    wh.detach();
 }
 
 void Socks5Server::shutdown()

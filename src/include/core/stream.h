@@ -27,45 +27,4 @@ private:
     Address local;
     Address remote;
 };
-
-struct StreamHodler
-{
-    StreamHodler(Stream *p) : mp(p)
-    {
-    }
-
-    StreamHodler():mp(nullptr)
-    {
-
-    }
-
-    ~StreamHodler()
-    {
-        if (mp != nullptr)
-        {
-            delete mp;
-        }
-    }
-
-    void attach(Stream *p)
-    {
-        mp = p;
-    }
-
-    Stream * detach()
-    {
-        auto tmp = mp;
-        mp = nullptr;
-        return tmp;
-    }
-
-    Stream *operator->()
-    {
-        return mp;
-    }
-
-private:
-    Stream *mp;
-};
-
 #endif

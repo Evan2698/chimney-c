@@ -1,7 +1,7 @@
 #include "core/stream.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <loguru.hpp>
+#include "core/g.h"
 #include <unistd.h>
 Stream::Stream(int h, Address l, Address r) : handle(h),
                                               local(l),
@@ -15,6 +15,10 @@ Stream::Stream(int h) : handle(h)
 
 Stream::~Stream()
 {
+    LOG_S(INFO) << "~Stream["
+                << this->local.toString() << "------"
+                << this->remote.toString() << "]"
+                << std::endl;
     Close();
 }
 
@@ -64,11 +68,11 @@ Address Stream::get_remote()
     return remote;
 }
 
-void Stream::set_local(const Address & a)
+void Stream::set_local(const Address &a)
 {
     this->local = a;
 }
-void Stream::set_remote(const Address & a)
+void Stream::set_remote(const Address &a)
 {
     this->remote = a;
 }

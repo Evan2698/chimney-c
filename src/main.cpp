@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     loguru::g_colorlogtostderr = true;
 	loguru::g_preamble_uptime   = false;
 	loguru::g_preamble_thread   = false;
-    //loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
+    loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
 
 
 
@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
     LOG_S(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
     LOG_S(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
-    auto client = PeerFactory::get_instance();
-    client->set_key(key);
-    client->set_user_pass(hash, hash);
-    client->set_proxy(remote);
+    auto & client = PeerFactory::get_instance();
+    client.set_key(key);
+    client.set_user_pass(hash, hash);
+    client.set_proxy(remote);
 
     Socks5Server server(local);
     g_p = &server;

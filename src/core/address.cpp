@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <arpa/inet.h>
 #include <string.h>
-#include <glog/logging.h>
+#include <logfault/logfault.h>
 #include "core/func.hpp"
 
 Address::Address()
@@ -225,7 +225,7 @@ bool Address::isIPv6(const std::string &host)
 //	socks5AddressDomain uint8 = 0x3
 std::shared_ptr<Address> Address::FromSocks5CommandStream(const std::vector<unsigned char> &cmd)
 {
-    LOG(INFO) << "FromSocks5CommandStream  " << ToHexEX(cmd.begin(), cmd.end());
+    LFLOG_INFO << "FromSocks5CommandStream  " << ToHexEX(cmd.begin(), cmd.end());
     auto address = std::make_shared<Address>();
     short a = cmd[cmd.size() - 2];
     a = a << 8 | cmd[cmd.size() - 1];

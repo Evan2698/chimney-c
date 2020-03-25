@@ -1,12 +1,13 @@
 #include "core/socks5server.h"
 #include "core/socket.h"
-#include "glog/logging.h"
 #include "core/address.h"
 #include "core/stream.h"
 #include <thread>
 #include "core/func.hpp"
 #include "core/peerfactory.h"
 #include "core/g.h"
+#include <logfault/logfault.h>
+#include <unistd.h>
 Socks5Server::Socks5Server(Address listening) : listen_address(listening), handle(0)
 {
 }
@@ -23,20 +24,20 @@ static int sayHello(StreamHodler &sp)
     int n = sp->Read(out);
     if (n <= 0)
     {
-        LOG(ERROR) << "Read hello failed " << n << std::endl;
+        LFLOG_ERROR << "Read hello failed " << n << std::endl;
         return -1;
     }
     if (out.size() < 3)
     {
-        LOG(ERROR) << "hello format is not correct!!" << n << std::endl;
+        LFLOG_ERROR << "hello format is not correct!!" << n << std::endl;
         return -1;
     }
 
-    LOG(INFO) << "client: >>> " << ToHexEX(out.begin(), out.end());
+    LFLOG_INFO << "client: >>> " << ToHexEX(out.begin(), out.end());
 
     if (out[0] != 0x5)
     {
-        LOG(ERROR) << "socks5 is invalid" << n << std::endl;
+        LFLOG_ERROR << "socks5 is invalid" << n << std::endl;
         return -1;
     }
     out[0] = 0x5;
@@ -44,7 +45,7 @@ static int sayHello(StreamHodler &sp)
     out.resize(2);
     n = sp->Write(out);
 
-    LOG(INFO) << "Write Hello " << n;
+    LFLOG_INFO << "Write Hello " << n;
 
     return n > 0 ? 0 : -1;
 }
@@ -55,7 +56,7 @@ static Stream * doCommand(const std::vector<unsigned char> &input)
     auto dest = Address::FromSocks5CommandStream(input);
     if (!dest)
     {
-        LOG(INFO) << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
+        LFLOG_INFO << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
         return nullptr;
     }
     return PeerFactory::get_instance()->build_peer_with_target(dest);
@@ -67,16 +68,16 @@ static int doConnect(StreamHodler &sp, StreamHodler &peer)
     int n = sp->Read(out);
     if (n <= 0)
     {
-        LOG(ERROR) << "read connect command failed" << n << std::endl;
+        LFLOG_ERROR << "read connect command failed" << n << std::endl;
         return -1;
     }
 
-    LOG(INFO) << "client connect : >>> " << ToHexEX(out.begin(), out.end());
+    LFLOG_INFO << "client connect : >>> " << ToHexEX(out.begin(), out.end());
     if (n < 4 || out[0] != 0x5 || out[1] != 1)
     {
         unsigned char rsu[10] = {0x05, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG(ERROR) << "socks 5 command error" << std::endl;
+        LFLOG_ERROR << "socks 5 command error" << std::endl;
         return -1;
     }
 
@@ -85,11 +86,11 @@ static int doConnect(StreamHodler &sp, StreamHodler &peer)
     {
         unsigned char rsu[10] = {0x05, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG(ERROR) << "handle connect command failed" << std::endl;
+        LFLOG_ERROR << "handle connect command failed" << std::endl;
         return -1;
     }
 
-    LOG(INFO) << "bound address" << target->get_local().toString() << std::endl;
+    LFLOG_INFO << "bound address" << target->get_local().toString() << std::endl;
 
     auto ss = target->get_local().PackSocks5Address();
     if (ss.empty())
@@ -97,15 +98,15 @@ static int doConnect(StreamHodler &sp, StreamHodler &peer)
         delete target;
         unsigned char rsu[10] = {0x05, 0x0C, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG(ERROR) << "bound address format error" << std::endl;
+        LFLOG_ERROR << "bound address format error" << std::endl;
         return -1;
     }
     n = sp->Write(ss);
-    LOG(INFO) << "write bound address Reason:" << n << std::endl;
+    LFLOG_INFO << "write bound address Reason:" << n << std::endl;
     if (0 >= n)
     {
         delete target;
-        LOG(ERROR) << "shake failed!!!!";
+        LFLOG_ERROR << "shake failed!!!!";
         return -1;
     }
 
@@ -147,7 +148,7 @@ static void proxy_read(StreamHodler &src,
         int n = src->Read(out);
         if (n <= 0)
         {
-            LOG(ERROR) << "Read failed!" << src->get_local().toString()
+            LFLOG_ERROR << "Read failed!" << src->get_local().toString()
                        << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -156,7 +157,7 @@ static void proxy_read(StreamHodler &src,
         n = I->Compress(out, key, tmp);
         if (n != 0)
         {
-            LOG(ERROR) << "zip failed" << std::endl;
+            LFLOG_ERROR << "zip failed" << std::endl;
             break;
         }
         out.resize(tmp.size() + 4);
@@ -167,7 +168,7 @@ static void proxy_read(StreamHodler &src,
         n = dst->Write(out);
         if (n <= 0)
         {
-            LOG(ERROR) << "write failed:" << dst->get_local().toString()
+            LFLOG_ERROR << "write failed:" << dst->get_local().toString()
                        << "<--->" << dst->get_remote().toString() << " " << n;
             break;
         }
@@ -186,7 +187,7 @@ static void proxy_write(StreamHodler  &src,
         int n = src->Read(out);
         if (n <= 0)
         {
-            LOG(ERROR) << "Read  LEN failed!" << src->get_local().toString()
+            LFLOG_ERROR << "Read  LEN failed!" << src->get_local().toString()
                        << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -194,14 +195,14 @@ static void proxy_write(StreamHodler  &src,
         auto next = ToInt(out.data());
         if (next > BUFFER_SIZE_READ + 512)
         {
-            LOG(ERROR) << "NEXT READ LEN is too big. " << next << std::endl;
+            LFLOG_ERROR << "NEXT READ LEN is too big. " << next << std::endl;
             break;
         }
         out.resize(next);
         n = src->Read(out);
         if (n <= 0)
         {
-            LOG(ERROR) << "Read conntent failed" << src->get_local().toString()
+            LFLOG_ERROR << "Read conntent failed" << src->get_local().toString()
                        << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -209,7 +210,7 @@ static void proxy_write(StreamHodler  &src,
         n = I->UnCompress(out, key, tmp);
         if (n != 0)
         {
-            LOG(ERROR) << "unzip failed!" << std::endl;
+            LFLOG_ERROR << "unzip failed!" << std::endl;
             ;
             break;
         }
@@ -217,7 +218,7 @@ static void proxy_write(StreamHodler  &src,
         n = dst->Write(tmp);
         if (n <= 0)
         {
-            LOG(ERROR) << "Write failed" << dst->get_local().toString()
+            LFLOG_ERROR << "Write failed" << dst->get_local().toString()
                        << "<--->" << dst->get_remote().toString() << "  " << n;
             break;
         }
@@ -267,7 +268,7 @@ void Socks5Server::doServeOnOne(Stream *psrc)
                PeerFactory::get_instance()->getMethod(),
                PeerFactory::get_instance()->get_key());
     rt.join();
-    LOG(INFO) << "OVER<====================>OVER" << std::endl;
+    LFLOG_INFO << "OVER<====================>OVER" << std::endl;
 }
 
 void Socks5Server::serve_on(Stream *sp)
@@ -280,14 +281,14 @@ int Socks5Server::run()
     handle = SocketBuilder::create_listening_socket(this->listen_address, "tcp");
     if (handle == -1)
     {
-        LOG(ERROR) << "create socket fd faield: " << handle << std::endl;
+        LFLOG_ERROR << "create socket fd faield: " << handle << std::endl;
         return -1;
     }
 
     int listenR = listen(handle, 40);
     if (listenR == -1)
     {
-        LOG(ERROR) << "listen fd faield: " << handle << std::endl;
+        LFLOG_ERROR << "listen fd faield: " << handle << std::endl;
         return -1;
     }
 
@@ -299,7 +300,7 @@ int Socks5Server::run()
         int newFD = accept(handle, (sockaddr *)&their_addr, &client_addr_size);
         if (newFD == -1)
         {
-            LOG(ERROR) << "Error while Accepting on socket\n";
+            LFLOG_ERROR << "Error while Accepting on socket\n";
             continue;
         }
         struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;

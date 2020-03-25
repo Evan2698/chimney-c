@@ -1,9 +1,8 @@
 #include "core/peerfactory.h"
-#include "glog/logging.h"
 #include "core/socket.h"
 #include "core/func.hpp"
 #include <optional>
-
+#include <logfault/logfault.h>
 PeerFactory::PeerFactory()
 {
 }
@@ -21,7 +20,7 @@ int PeerFactory::sayHello(Stream * sp)
     int n = sp->Write(out);
     if (n <= 0)
     {
-        LOG(ERROR) << "say hello failed! " << std::endl;
+        LFLOG_ERROR << "say hello failed! " << std::endl;
         return -1;
     }
 
@@ -29,13 +28,13 @@ int PeerFactory::sayHello(Stream * sp)
     n = sp->Read(out);
     if (n <= 0)
     {
-        LOG(ERROR) << "read hello failed! " << std::endl;
+        LFLOG_ERROR << "read hello failed! " << std::endl;
         return -1;
     }
 
     if (out[0] != 0x5 || out[1] != 2 || out[2] > 250 || out[2] + 3 != out.size())
     {
-        LOG(ERROR) << "server response format error "
+        LFLOG_ERROR << "server response format error "
                    << ToHexEX(out.begin(), out.end())
                    << "LEN=" << out.size() << std::endl;
         return -1;
@@ -44,7 +43,7 @@ int PeerFactory::sayHello(Stream * sp)
     auto op = PrivacyBase::build_privacy_method(ls);
     if (!op.has_value())
     {
-        LOG(ERROR) << "parse method failed!!" << std::endl;
+        LFLOG_ERROR << "parse method failed!!" << std::endl;
         return -1;
     }
     method = op.value();
@@ -58,7 +57,7 @@ int PeerFactory::VerifyAuth(Stream *sp)
     auto ret = this->method->Compress(this->pass, this->key, out);
     if (ret != 0)
     {
-        LOG(ERROR) << "Compressed pass failed " << std::endl;
+        LFLOG_ERROR << "Compressed pass failed " << std::endl;
         return -1;
     }
 
@@ -74,19 +73,19 @@ int PeerFactory::VerifyAuth(Stream *sp)
     ret = sp->Write(tmp);
     if (ret <= 0)
     {
-        LOG(ERROR) << "send user & pass failed: " << ret << std::endl;
+        LFLOG_ERROR << "send user & pass failed: " << ret << std::endl;
         return -1;
     }
     ret = sp->Read(tmp);
     if (ret <= 0)
     {
-        LOG(ERROR) << "Server response about user & pass. " << ret << std::endl;
+        LFLOG_ERROR << "Server response about user & pass. " << ret << std::endl;
         return -1;
     }
 
     if (tmp.size() < 2 || tmp[0] != 5 || tmp[1] != 0)
     {
-        LOG(ERROR) << "Verify user failed. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
+        LFLOG_ERROR << "Verify user failed. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
         return -1;
     }
 
@@ -103,7 +102,7 @@ std::shared_ptr<Address> PeerFactory::doConnect(Stream *sp, const Address &targe
     auto ret = this->method->Compress(tmp, this->key, out);
     if (ret != 0)
     {
-        LOG(ERROR) << "Compress target failed. " << std::endl;
+        LFLOG_ERROR << "Compress target failed. " << std::endl;
         return bound;
     }
     auto wcnt = 4 + 1 + out.size();
@@ -114,7 +113,7 @@ std::shared_ptr<Address> PeerFactory::doConnect(Stream *sp, const Address &targe
     auto writen = sp->Write(tmp);
     if (writen <= 0)
     {
-        LOG(ERROR) << "connect failed " << writen << std::endl;
+        LFLOG_ERROR << "connect failed " << writen << std::endl;
         return bound;
     }
 
@@ -122,13 +121,13 @@ std::shared_ptr<Address> PeerFactory::doConnect(Stream *sp, const Address &targe
     auto rcnt = sp->Read(tmp);
     if (rcnt <= 0)
     {
-        LOG(ERROR) << "read bound address failed. " << rcnt << std::endl;
+        LFLOG_ERROR << "read bound address failed. " << rcnt << std::endl;
         return bound;
     }
 
     if (tmp[0] != 0x5 || tmp[1] != 0 || tmp.size() < 10)
     {
-        LOG(ERROR) << "bound address format is invalid. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
+        LFLOG_ERROR << "bound address format is invalid. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
         return bound;
     }
     
@@ -139,12 +138,12 @@ std::shared_ptr<Address> PeerFactory::doConnect(Stream *sp, const Address &targe
 Stream * PeerFactory::build_peer_with_target(const std::shared_ptr<Address> &target)
 {
    
-    LOG(INFO) << "target address: " << target->toString() << std::endl;
+    LFLOG_INFO << "target address: " << target->toString() << std::endl;
 
     auto fd = SocketBuilder::create_socket(proxy, "tcp");
     if (fd == -1)
     {
-        LOG(ERROR) << "create socket failed: " << fd << std::endl;
+        LFLOG_ERROR << "create socket failed: " << fd << std::endl;
         return nullptr;
     }
     auto out = new Stream(fd);
@@ -152,19 +151,19 @@ Stream * PeerFactory::build_peer_with_target(const std::shared_ptr<Address> &tar
     
     if (sayHello(out) != 0)
     {
-        LOG(ERROR) << "say hello failed: " << std::endl;       
+        LFLOG_ERROR << "say hello failed: " << std::endl;       
         return nullptr;
     }
 
     if (VerifyAuth(out) != 0)
     {
-        LOG(ERROR) << "verify user and pass failed " << std::endl;
+        LFLOG_ERROR << "verify user and pass failed " << std::endl;
         return nullptr;
     }
     auto bound = doConnect(out, *target.get());
     if (!bound)
     {
-        LOG(ERROR) << "connect failed>>>>>>" << target->toString() << std::endl; 
+        LFLOG_ERROR << "connect failed>>>>>>" << target->toString() << std::endl; 
         return nullptr;
     }
 

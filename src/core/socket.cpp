@@ -1,17 +1,18 @@
 #include "core/socket.h"
 #include <fcntl.h>
 #include <arpa/inet.h>
-#include <glog/logging.h>
+#include <logfault/logfault.h>
+#include <unistd.h>
 int SocketBuilder::create_socket(Address a, const std::string &network)
 {
-    LOG(INFO) << "create_socket " << a.toString();
+    LFLOG_INFO << "create_socket " << a.toString();
     struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_port = htons(a.port());
     auto err = inet_pton(AF_INET, a.host().c_str(), &address.sin_addr);
     if (err < 0)
     {
-        LOG(ERROR) << "create socket failed: " << err << std::endl;
+        LFLOG_ERROR << "create socket failed: " << err << std::endl;
         return -1;
     }
 
@@ -19,19 +20,19 @@ int SocketBuilder::create_socket(Address a, const std::string &network)
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-        LOG(ERROR) << "create socket failed: " << sock << std::endl;
+        LFLOG_ERROR << "create socket failed: " << sock << std::endl;
         return -1;
     }    
 
-    LOG(INFO) << "create_socket " << "will connect!!!" << address.sin_addr.s_addr << "X" << address.sin_port;
+    LFLOG_INFO << "create_socket " << "will connect!!!" << address.sin_addr.s_addr << "X" << address.sin_port;
     if ((err = connect(sock, (struct sockaddr *)&address, sizeof(address))) < 0)
     {
         close(sock);
-        LOG(ERROR) << "connect socket failed: " << a.toString() << err << std::endl;
+        LFLOG_ERROR << "connect socket failed: " << a.toString() << err << std::endl;
         return -1;
     }
 
-    LOG(INFO) << "Connect success~";   
+    LFLOG_INFO << "Connect success~";   
 
     return sock;
 }
@@ -58,7 +59,7 @@ int SocketBuilder::create_listening_socket(Address a, const std::string &network
     auto err = inet_pton(AF_INET, a.host().c_str(), &address.sin_addr);
     if (err < 0)
     {
-        LOG(ERROR) << "create socket failed: " << err << std::endl;
+        LFLOG_ERROR << "create socket failed: " << err << std::endl;
         return -1;
     }
     auto fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -73,7 +74,7 @@ int SocketBuilder::create_listening_socket(Address a, const std::string &network
     if (err < 0)
     {
         close(fd);
-        LOG(ERROR) << "bind socket address failed : " << err << std::endl;
+        LFLOG_ERROR << "bind socket address failed : " << err << std::endl;
         return -1;
     }
     return fd;

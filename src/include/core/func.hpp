@@ -1,8 +1,8 @@
-#ifndef FUCN_H_328E88QE88DJASDJFHASNGLCNGJA
-#define FUCN_H_328E88QE88DJASDJFHASNGLCNGJA
+#ifndef FUCN_H_328E88QE88DJASDJFHASNGLCNGJA_OEUEUR
+#define FUCN_H_328E88QE88DJASDJFHASNGLCNGJA_OEUEUR
 #include <string>
 #include <strstream>
-template <typename T>
+/*template <typename T>
 std::string ToHex(T begin, T end)
 {
 	static const char *chars = "0123456789ABCDEF";
@@ -17,6 +17,7 @@ std::string ToHex(T begin, T end)
 	return hex.str();
 }
 
+*/
 template <typename T>
 std::string ToHexEX(T begin, T end)
 {

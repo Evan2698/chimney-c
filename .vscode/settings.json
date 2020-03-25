@@ -55,6 +55,7 @@
         "queue": "cpp",
         "functional": "cpp",
         "numeric": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "crypto_verify_16.h": "c"
     }
 }

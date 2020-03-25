@@ -1,0 +1,57 @@
+{
+    find_program = {
+        ccache = false,
+        ar = "/usr/bin/ar",
+        ["/usr/bin/gcc"] = "/usr/bin/gcc",
+        ["/usr/bin/g++"] = "/usr/bin/g++"
+    },
+    ["lib.detect.has_flags"] = {
+        ["linux_x86_64_/usr/bin/gcc_7.5.0-3ubuntu1_cxx___-O3"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.5.0-3ubuntu1_cc_cxflags_-m64 -I/usr/local/include -I/usr/include_-fdiagnostics-color=always"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.5.0-3ubuntu1_cc_cxflags_-m64 -I/usr/local/include -I/usr/include_-MMD -MF"] = true,
+        ["linux_x86_64_/usr/bin/g++_7.5.0-3ubuntu1_ld_ldflags_-m64 -L/usr/local/lib -L/usr/lib -m64 -L/usr/local/lib -L/usr/lib_-Wl,-rpath=@loader_path"] = true,
+        ["linux_x86_64_/usr/bin/gcc_7.5.0-3ubuntu1_cc_cxflags_-m64 -I/usr/local/include -I/usr/include_-fcolor-diagnostics"] = false,
+        ["linux_x86_64_/usr/bin/gcc_7.5.0-3ubuntu1_cc___-O3"] = true
+    },
+    find_programver = {
+        ["/usr/bin/gcc"] = "7.5.0-3ubuntu1",
+        ["/usr/bin/g++"] = "7.5.0-3ubuntu1"
+    },
+    __version = "2.3.1",
+    ["detect.tools.gcc.has_flags"] = {
+        ["/usr/bin/gcc_7.5.0-3ubuntu1"] = {
+            ["--help"] = true,
+            ["-shared"] = true,
+            ["-c"] = true,
+            ["-pie"] = true,
+            ["-Xlinker"] = true,
+            ["-o"] = true,
+            ["-Xassembler"] = true,
+            ["-v"] = true,
+            ["-pass-exit-codes"] = true,
+            ["-save-temps"] = true,
+            ["-print-multiarch"] = true,
+            ["-E"] = true,
+            ["-pipe"] = true,
+            ["-print-sysroot"] = true,
+            ["--target-help"] = true,
+            ["-dumpversion"] = true,
+            ["-print-multi-lib"] = true,
+            ["--param"] = true,
+            ["-print-multi-directory"] = true,
+            ["-time"] = true,
+            ["-print-search-dirs"] = true,
+            ["-Xpreprocessor"] = true,
+            ["--version"] = true,
+            ["-dumpspecs"] = true,
+            ["-x"] = true,
+            ["-B"] = true,
+            ["-S"] = true,
+            ["-no-canonical-prefixes"] = true,
+            ["-print-libgcc-file-name"] = true,
+            ["-print-multi-os-directory"] = true,
+            ["-print-sysroot-headers-suffix"] = true,
+            ["-dumpmachine"] = true
+        }
+    }
+}

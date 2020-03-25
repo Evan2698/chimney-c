@@ -1,0 +1,9 @@
+[submodule "3rd/logfault"]
+	path = 3rd/logfault
+	url = https://github.com/jgaa/logfault.git
+[submodule "3rd/rapidjson"]
+	path = 3rd/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "3rd/libsodium"]
+	path = 3rd/libsodium
+	url = https://github.com/jedisct1/libsodium.git

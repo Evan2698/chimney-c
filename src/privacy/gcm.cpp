@@ -9,7 +9,7 @@
 #include <iostream>
 #include "privacy/gcm.h"
 #include <sodium.h>
-#include "glog/logging.h"
+#include <logfault/logfault.h>
 
 inline std::size_t alloSize(size_t o)
 {
@@ -31,31 +31,31 @@ int GCM::Compress(const std::vector<unsigned char> &in,
 
     if (key.size() != 32)
     {
-        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
+        LFLOG_ERROR << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 12)
     {
-        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
+        LFLOG_ERROR << "IV must be 12 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LOG(ERROR) << "input can not be empty. " << std::endl;
+        LFLOG_ERROR << "input can not be empty. " << std::endl;
         return -3;
     }
 
     if (!inited)
     {
-        LOG(ERROR) << "WHY??? " << std::endl;
+        LFLOG_ERROR << "WHY??? " << std::endl;
         return -4;
     }
 
     if (crypto_aead_aes256gcm_is_available() == 0)
     {
-        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        LFLOG_ERROR << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
         return -5;
     }
 
@@ -77,31 +77,31 @@ int GCM::UnCompress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
+        LFLOG_ERROR << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 12)
     {
-        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
+        LFLOG_ERROR << "IV must be 12 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LOG(ERROR) << "input can not be empty. " << std::endl;
+        LFLOG_ERROR << "input can not be empty. " << std::endl;
         return -3;
     }
 
     if (!inited)
     {
-        LOG(ERROR) << "WHY??? " << std::endl;
+        LFLOG_ERROR << "WHY??? " << std::endl;
         return -4;
     }
 
     if (crypto_aead_aes256gcm_is_available() == 0)
     {
-        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        LFLOG_ERROR << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
         return -5;
     }
 

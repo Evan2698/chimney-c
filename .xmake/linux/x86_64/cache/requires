@@ -1,0 +1,14 @@
+{
+    __version = "2.3.1",
+    libsodium = {
+        linkdirs = "/home/evan/.conan/data/libsodium/1.0.18/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/lib",
+        __enabled = true,
+        defines = "SODIUM_STATIC",
+        __extrainfo = {
+            alias = "libsodium"
+        },
+        links = "sodium",
+        __requirestr = "conan::libsodium/1.0.18@bincrafters/stable",
+        includedirs = "/home/evan/.conan/data/libsodium/1.0.18/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include"
+    }
+}

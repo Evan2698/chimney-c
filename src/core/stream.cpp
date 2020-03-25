@@ -1,7 +1,8 @@
 #include "core/stream.h"
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <glog/logging.h>
+#include <logfault/logfault.h>
+#include <unistd.h>
 Stream::Stream(int h, Address l, Address r) : handle(h),
                                               local(l),
                                               remote(r)

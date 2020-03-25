@@ -1,0 +1,9 @@
+{
+    options_all = { },
+    mtimes = {
+        ["xmake.lua"] = 1585109477
+    },
+    ["options_chimney-c"] = ref("options_all"),
+    __version = "2.3.1",
+    options_sodium = ref("options_all")
+}

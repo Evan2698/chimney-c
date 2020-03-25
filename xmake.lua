@@ -26,5 +26,6 @@ target("chimney-c")
     add_includedirs("3rd/rapidjson/include")
     --add_includedirs("3rd/libsodium/src//libsodium/include")
     add_links("pthread", "dl")
+    add_packages("libsodium")
  
 

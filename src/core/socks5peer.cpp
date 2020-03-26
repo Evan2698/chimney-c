@@ -133,6 +133,9 @@ std::shared_ptr<Address> Socks5Peer::doConnect(std::shared_ptr<Stream> &sp, cons
     auto bytes = target->PackSocks5Address();
     bytes[1] = 0x1; //connect command
     auto tmp = std::vector<unsigned char>(bytes.begin() + 4, bytes.end());
+    if (target->type() == Address::domain){
+        tmp = std::vector<unsigned char>(bytes.begin() + 5, bytes.end());
+    }
     std::vector<unsigned char> out;
     auto ret = this->method->Compress(tmp, this->key, out);
     if (ret != 0)

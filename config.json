@@ -1,6 +1,6 @@
 {
-    "server": "127.0.0.1",
-    "server_port": 9025,
+    "server": "176.122.150.228",
+    "server_port": 25,
     "quic_port": 9023,
     "local": "127.0.0.1",
     "local_port": 9023,

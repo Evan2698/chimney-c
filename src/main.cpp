@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
     FLAGS_colorlogtostderr=true;
-    google::SetStderrLogging(google::FATAL);
+    google::SetStderrLogging(google::INFO);
     
    
  

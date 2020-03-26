@@ -154,7 +154,11 @@ std::string Address::portString() const
 
 std::string Address::toString() const
 {
-    return host_ + ":" + std::to_string(port_);
+    std::string out;
+    out.append(host_);
+    out.append(":");
+    out.append(std::to_string(port_));
+    return out;
 }
 
 Address::Type Address::type() const
@@ -225,10 +229,10 @@ bool Address::isIPv6(const std::string &host)
 //	socks5AddressDomain uint8 = 0x3
 std::shared_ptr<Address> Address::FromSocks5CommandStream(const std::vector<unsigned char> &cmd)
 {
-    LOG_S(INFO) << "FromSocks5CommandStream  " << ToHexEX(cmd.begin(), cmd.end());
+    LOG(INFO) << "FromSocks5CommandStream  " << ToHexEX(cmd.begin(), cmd.end());
     auto address = std::make_shared<Address>();
-    short a = cmd[cmd.size() - 2];
-    a = a << 8 | cmd[cmd.size() - 1];
+    uint16_t a = cmd[cmd.size() - 2];
+    a = a << 8 | cmd[cmd.size() - 1]; 
 
     if (0x1 == cmd[0])
     {
@@ -246,9 +250,9 @@ std::shared_ptr<Address> Address::FromSocks5CommandStream(const std::vector<unsi
         // domain
         address->type_ = Type::domain;
         address->port_ = a;
-        if (cmd.begin() + cmd[1] < cmd.end())
+        if (cmd.begin() + cmd[1] + 2 < cmd.end())
         {
-            address->host_ = std::string(cmd.begin() + 2, cmd.begin() + cmd[1]);
+            address->host_ = std::string(cmd.begin() + 2, cmd.begin() + cmd[1] + 2);
         }
     }
     else if (0x4 == cmd[0])
@@ -262,6 +266,8 @@ std::shared_ptr<Address> Address::FromSocks5CommandStream(const std::vector<unsi
         }
     }
 
+    LOG(INFO) << "FromSocks5CommandStream  result:  "               
+                << (address->toString()) << std::endl;
     return address;
 }
 

@@ -25,18 +25,16 @@ Socks5Server *g_p = nullptr;
 int main(int argc, char *argv[])
 {
     UNREFERENCED_PARAMETER(argc);
+    google::InitGoogleLogging(argv[0]);
+    FLAGS_colorlogtostderr=true;
+    google::SetStderrLogging(google::FATAL);
+    
    
-    loguru::g_colorlogtostderr = true;
-	loguru::g_preamble_uptime   = false;
-	loguru::g_preamble_thread   = false;
-    loguru::g_stderr_verbosity = loguru::Verbosity_OFF;
-
-
-
+ 
     auto settings = get_local_setting();
     if (!settings)
     {
-        LOG_S(ERROR) << "config file is not exist!!!" << std::endl;
+        LOG(ERROR) << "config file is not exist!!!" << std::endl;
         exit(1);
     }
 
@@ -45,14 +43,14 @@ int main(int argc, char *argv[])
     std::vector<unsigned char> keyW(settings->pwd.begin(), settings->pwd.end());
     Address remote(settings->server, settings->server_port, Address::Type::ipv4);
     Address local(settings->local, settings->local_port, Address::Type::ipv4);
-    LOG_S(INFO) << "S address:" << remote.toString() << std::endl;
-    LOG_S(INFO) << "---------------------" << std::endl;
-    LOG_S(INFO) << "L address:" << local.toString() << std::endl;
+    LOG(INFO) << "S address:" << remote.toString() << std::endl;
+    LOG(INFO) << "---------------------" << std::endl;
+    LOG(INFO) << "L address:" << local.toString() << std::endl;
 
     auto key = PrivacyBase::make_sha1(keyW).value();
     auto hash = PrivacyBase::make_hmac(key, msg).value();
-    LOG_S(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
-    LOG_S(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
+    LOG(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
+    LOG(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
     auto & client = PeerFactory::get_instance();
     client.set_key(key);
@@ -63,7 +61,7 @@ int main(int argc, char *argv[])
     g_p = &server;
     signal(SIGINT, [](int sig) -> void {
         g_p->shutdown();
-        LOG_S(INFO) << "signal " << sig << std::endl;
+        LOG(INFO) << "signal " << sig << std::endl;
         exit(3);
     });
 

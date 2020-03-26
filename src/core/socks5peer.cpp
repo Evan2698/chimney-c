@@ -14,31 +14,31 @@ Socks5Peer::~Socks5Peer()
 
 std::shared_ptr<Stream> Socks5Peer::build_stream(const std::shared_ptr<Address> &target)
 {
-    LOG_S(INFO) << "target address: " << target->toString() << std::endl;
+    LOG(INFO) << "target address: " << target->toString() << std::endl;
 
     auto fd = SocketBuilder::create_socket(proxy, "tcp");
     if (fd == -1)
     {
-        LOG_S(ERROR) << "create socket failed: " << fd << std::endl;
+        LOG(ERROR) << "create socket failed: " << fd << std::endl;
         return nullptr;
     }
 
     auto out = std::make_shared<Stream>(fd);
     if (sayHello(out) != 0)
     {
-        LOG_S(ERROR) << "say hello failed: " << std::endl;
+        LOG(ERROR) << "say hello failed: " << std::endl;
         return nullptr;
     }
 
     if (VerifyAuth(out) != 0)
     {
-        LOG_S(ERROR) << "verify user and pass failed " << std::endl;
+        LOG(ERROR) << "verify user and pass failed " << std::endl;
         return nullptr;
     }
     auto bound = doConnect(out, target);
     if (!bound)
     {
-        LOG_S(ERROR) << "connect failed>>>>>>" << target->toString() << std::endl;
+        LOG(ERROR) << "connect failed>>>>>>" << target->toString() << std::endl;
         return nullptr;
     }
 
@@ -55,7 +55,7 @@ int Socks5Peer::sayHello(std::shared_ptr<Stream> &sp)
     int n = sp->Write(out);
     if (n <= 0)
     {
-        LOG_S(ERROR) << "say hello failed! " << std::endl;
+        LOG(ERROR) << "say hello failed! " << std::endl;
         return -1;
     }
 
@@ -63,13 +63,13 @@ int Socks5Peer::sayHello(std::shared_ptr<Stream> &sp)
     n = sp->Read(out);
     if (n <= 0)
     {
-        LOG_S(ERROR) << "read hello failed! " << std::endl;
+        LOG(ERROR) << "read hello failed! " << std::endl;
         return -1;
     }
 
     if (out[0] != 0x5 || out[1] != 2 || out[2] > 250 || out[2] + 3 != out.size())
     {
-        LOG_S(ERROR) << "server response format error "
+        LOG(ERROR) << "server response format error "
                      << ToHexEX(out.begin(), out.end())
                      << "LEN=" << out.size() << std::endl;
         return -1;
@@ -78,7 +78,7 @@ int Socks5Peer::sayHello(std::shared_ptr<Stream> &sp)
     auto op = PrivacyBase::build_privacy_method(ls);
     if (!op.has_value())
     {
-        LOG_S(ERROR) << "parse method failed!!" << std::endl;
+        LOG(ERROR) << "parse method failed!!" << std::endl;
         return -1;
     }
     method = op.value();
@@ -92,7 +92,7 @@ int Socks5Peer::VerifyAuth(std::shared_ptr<Stream> &sp)
     auto ret = this->method->Compress(this->pass, this->key, out);
     if (ret != 0)
     {
-        LOG_S(ERROR) << "Compressed pass failed " << std::endl;
+        LOG(ERROR) << "Compressed pass failed " << std::endl;
         return -1;
     }
 
@@ -108,19 +108,19 @@ int Socks5Peer::VerifyAuth(std::shared_ptr<Stream> &sp)
     ret = sp->Write(tmp);
     if (ret <= 0)
     {
-        LOG_S(ERROR) << "send user & pass failed: " << ret << std::endl;
+        LOG(ERROR) << "send user & pass failed: " << ret << std::endl;
         return -1;
     }
     ret = sp->Read(tmp);
     if (ret <= 0)
     {
-        LOG_S(ERROR) << "Server response about user & pass. " << ret << std::endl;
+        LOG(ERROR) << "Server response about user & pass. " << ret << std::endl;
         return -1;
     }
 
     if (tmp.size() < 2 || tmp[0] != 5 || tmp[1] != 0)
     {
-        LOG_S(ERROR) << "Verify user failed. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
+        LOG(ERROR) << "Verify user failed. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
         return -1;
     }
 
@@ -137,7 +137,7 @@ std::shared_ptr<Address> Socks5Peer::doConnect(std::shared_ptr<Stream> &sp, cons
     auto ret = this->method->Compress(tmp, this->key, out);
     if (ret != 0)
     {
-        LOG_S(ERROR) << "Compress target failed. " << std::endl;
+        LOG(ERROR) << "Compress target failed. " << std::endl;
         return nullptr;
     }
     auto wcnt = 4 + 1 + out.size();
@@ -148,7 +148,7 @@ std::shared_ptr<Address> Socks5Peer::doConnect(std::shared_ptr<Stream> &sp, cons
     auto writen = sp->Write(tmp);
     if (writen <= 0)
     {
-        LOG_S(ERROR) << "connect failed " << writen << std::endl;
+        LOG(ERROR) << "connect failed " << writen << std::endl;
         return nullptr;
     }
 
@@ -156,13 +156,13 @@ std::shared_ptr<Address> Socks5Peer::doConnect(std::shared_ptr<Stream> &sp, cons
     auto rcnt = sp->Read(tmp);
     if (rcnt <= 0)
     {
-        LOG_S(ERROR) << "read bound address failed. " << rcnt << std::endl;
+        LOG(ERROR) << "read bound address failed. " << rcnt << std::endl;
         return nullptr;
     }
 
     if (tmp[0] != 0x5 || tmp[1] != 0 || tmp.size() < 10)
     {
-        LOG_S(ERROR) << "bound address format is invalid. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
+        LOG(ERROR) << "bound address format is invalid. " << ToHexEX(tmp.begin(), tmp.end()) << std::endl;
         return nullptr;
     }
 

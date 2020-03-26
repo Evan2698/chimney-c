@@ -26,20 +26,20 @@ static int sayHello(std::shared_ptr<Stream> &sp)
     int n = sp->Read(out);
     if (n <= 0)
     {
-        LOG_S(ERROR) << "Read hello failed " << n << std::endl;
+        LOG(ERROR) << "Read hello failed " << n << std::endl;
         return -1;
     }
     if (out.size() < 3)
     {
-        LOG_S(ERROR) << "hello format is not correct!!" << n << std::endl;
+        LOG(ERROR) << "hello format is not correct!!" << n << std::endl;
         return -1;
     }
 
-    LOG_S(INFO) << "client: >>> " << ToHexEX(out.begin(), out.end());
+    LOG(INFO) << "client: >>> " << ToHexEX(out.begin(), out.end());
 
     if (out[0] != 0x5)
     {
-        LOG_S(ERROR) << "socks5 is invalid" << n << std::endl;
+        LOG(ERROR) << "socks5 is invalid" << n << std::endl;
         return -1;
     }
     out[0] = 0x5;
@@ -47,7 +47,7 @@ static int sayHello(std::shared_ptr<Stream> &sp)
     out.resize(2);
     n = sp->Write(out);
 
-    LOG_S(INFO) << "Write Hello " << n;
+    LOG(INFO) << "Write Hello " << n;
 
     return n > 0 ? 0 : -1;
 }
@@ -58,21 +58,23 @@ static std::shared_ptr<ThreadParameter> doCommand(const std::vector<unsigned cha
     auto target = Address::FromSocks5CommandStream(input);
     if (!target)
     {
-        LOG_S(ERROR) << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
+        LOG(ERROR) << "destion address parse failed " << ToHexEX(input.begin(), input.end()) << std::endl;
         return nullptr;
     }
+
+    LOG(INFO) << "destination address: " << target->toString();
 
     auto peer = PeerFactory::get_instance().build_socks5_peer();
     if (!peer)
     {
-        LOG_S(ERROR) << "Create Peer failed " << std::endl;
+        LOG(ERROR) << "Create Peer failed " << std::endl;
         return nullptr;
     }
 
     auto s = peer->build_stream(target);
     if (!s)
     {
-        LOG_S(ERROR) << "create stream of peer failed " << std::endl;
+        LOG(ERROR) << "create stream of peer failed " << std::endl;
         return nullptr;
     }
 
@@ -90,16 +92,16 @@ static std::shared_ptr<ThreadParameter> doConnect(std::shared_ptr<Stream> &sp)
     int n = sp->Read(out);
     if (n <= 0)
     {
-        LOG_S(ERROR) << "read connect command failed" << n << std::endl;
+        LOG(ERROR) << "read connect command failed" << n << std::endl;
         return nullptr;
     }
 
-    LOG_S(INFO) << "client connect : >>> " << ToHexEX(out.begin(), out.end());
+    LOG(INFO) << "client connect : >>> " << ToHexEX(out.begin(), out.end());
     if (n < 4 || out[0] != 0x5 || out[1] != 1)
     {
         unsigned char rsu[10] = {0x05, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG_S(ERROR) << "socks 5 command error" << std::endl;
+        LOG(ERROR) << "socks 5 command error" << std::endl;
         return nullptr;
     }
 
@@ -108,25 +110,25 @@ static std::shared_ptr<ThreadParameter> doConnect(std::shared_ptr<Stream> &sp)
     {
         unsigned char rsu[10] = {0x05, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG_S(ERROR) << "handle connect command failed" << std::endl;
+        LOG(ERROR) << "handle connect command failed" << std::endl;
         return nullptr;
     }
 
-    LOG_S(INFO) << "bound address" << parameter->Dst->get_local().toString() << std::endl;
+    LOG(INFO) << "bound address: " << parameter->Dst->get_local().toString() << std::endl;
 
     auto ss = parameter->Dst->get_local().PackSocks5Address();
     if (ss.empty())
     {
         unsigned char rsu[10] = {0x05, 0x0C, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         sp->Write(std::vector<unsigned char>(std::begin(rsu), std::end(rsu)));
-        LOG_S(ERROR) << "bound address format error" << std::endl;
+        LOG(ERROR) << "bound address format error" << std::endl;
         return nullptr;
     }
     n = sp->Write(ss);
-    LOG_S(INFO) << "write bound address Reason:" << n << std::endl;
+    LOG(INFO) << "write bound address Reason:  " << n << std::endl;
     if (0 >= n)
     {
-        LOG_S(ERROR) << "shake failed!!!!";
+        LOG(ERROR) << "shake failed!!!!";
         return nullptr;
     }
 
@@ -169,7 +171,7 @@ static void proxy_read(std::shared_ptr<ThreadParameter> & param)
         int n = src->Read(out);
         if (n <= 0)
         {
-            LOG_S(ERROR) << "Read failed!" << src->get_local().toString()
+            LOG(ERROR) << "Read failed!" << src->get_local().toString()
                          << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -178,7 +180,7 @@ static void proxy_read(std::shared_ptr<ThreadParameter> & param)
         n = I->Compress(out, key, tmp);
         if (n != 0)
         {
-            LOG_S(ERROR) << "zip failed" << std::endl;
+            LOG(ERROR) << "zip failed" << std::endl;
             break;
         }
         out.resize(tmp.size() + 4);
@@ -189,7 +191,7 @@ static void proxy_read(std::shared_ptr<ThreadParameter> & param)
         n = dst->Write(out);
         if (n <= 0)
         {
-            LOG_S(ERROR) << "write failed:" << dst->get_local().toString()
+            LOG(ERROR) << "write failed:" << dst->get_local().toString()
                          << "<--->" << dst->get_remote().toString() << " " << n;
             break;
         }
@@ -209,7 +211,7 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
         int n = src->Read(out);
         if (n <= 0)
         {
-            LOG_S(ERROR) << "Read  LEN failed!" << src->get_local().toString()
+            LOG(ERROR) << "Read  LEN failed!" << src->get_local().toString()
                          << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -217,14 +219,14 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
         auto next = ToInt(out.data());
         if (next > BUFFER_SIZE_READ + 512)
         {
-            LOG_S(ERROR) << "NEXT READ LEN is too big. " << next << std::endl;
+            LOG(ERROR) << "NEXT READ LEN is too big. " << next << std::endl;
             break;
         }
         out.resize(next);
         n = src->Read(out);
         if (n <= 0)
         {
-            LOG_S(ERROR) << "Read conntent failed" << src->get_local().toString()
+            LOG(ERROR) << "Read conntent failed" << src->get_local().toString()
                          << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
@@ -232,7 +234,7 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
         n = I->UnCompress(out, key, tmp);
         if (n != 0)
         {
-            LOG_S(ERROR) << "unzip failed!" << std::endl;
+            LOG(ERROR) << "unzip failed!" << std::endl;
             ;
             break;
         }
@@ -240,7 +242,7 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
         n = dst->Write(tmp);
         if (n <= 0)
         {
-            LOG_S(ERROR) << "Write failed" << dst->get_local().toString()
+            LOG(ERROR) << "Write failed" << dst->get_local().toString()
                          << "<--->" << dst->get_remote().toString() << "  " << n;
             break;
         }
@@ -257,12 +259,12 @@ void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
     auto param = doConnect(src);
     if (!param )
     {
-        LOG_S(ERROR) << "Prepare thread paramter failed!!" << std::endl;
+        LOG(ERROR) << "Prepare thread paramter failed!!" << std::endl;
         return;
     } 
 
     if (!param->isValid()){
-        LOG_S(ERROR) << "thread paramter is invalid!" << std::endl;
+        LOG(ERROR) << "thread paramter is invalid!" << std::endl;
         return;
     }
   
@@ -272,7 +274,7 @@ void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
 
     proxy_read(param);
     xox.join();
-    LOG_S(INFO) << "OVER<====================>OVER" << std::endl;
+    LOG(INFO) << "OVER<====================>OVER" << std::endl;
 }
 
 int Socks5Server::run()
@@ -280,14 +282,14 @@ int Socks5Server::run()
     handle = SocketBuilder::create_listening_socket(this->listen_address, "tcp");
     if (handle == -1)
     {
-        LOG_S(ERROR) << "create socket fd faield: " << handle << std::endl;
+        LOG(ERROR) << "create socket fd faield: " << handle << std::endl;
         return -1;
     }
 
     int listenR = listen(handle, 40);
     if (listenR == -1)
     {
-        LOG_S(ERROR) << "listen fd faield: " << handle << std::endl;
+        LOG(ERROR) << "listen fd faield: " << handle << std::endl;
         return -1;
     }
 
@@ -299,7 +301,7 @@ int Socks5Server::run()
         int newFD = accept(handle, (sockaddr *)&their_addr, &client_addr_size);
         if (newFD == -1)
         {
-            LOG_S(ERROR) << "Error while Accepting on socket\n";
+            LOG(ERROR) << "Error while Accepting on socket\n";
             break;
         }
         Address R((struct sockaddr_in *)&their_addr);

@@ -31,31 +31,31 @@ int GCM::Compress(const std::vector<unsigned char> &in,
 
     if (key.size() != 32)
     {
-        LOG_S(ERROR) << "key size must be 32 bytes long. " << std::endl;
+        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 12)
     {
-        LOG_S(ERROR) << "IV must be 12 bytes long. " << std::endl;
+        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LOG_S(ERROR) << "input can not be empty. " << std::endl;
+        LOG(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 
     if (!inited)
     {
-        LOG_S(ERROR) << "WHY??? " << std::endl;
+        LOG(ERROR) << "WHY??? " << std::endl;
         return -4;
     }
 
     if (crypto_aead_aes256gcm_is_available() == 0)
     {
-        LOG_S(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
         return -5;
     }
 
@@ -77,31 +77,31 @@ int GCM::UnCompress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LOG_S(ERROR) << "key size must be 32 bytes long. " << std::endl;
+        LOG(ERROR) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_iv.size() != 12)
     {
-        LOG_S(ERROR) << "IV must be 12 bytes long. " << std::endl;
+        LOG(ERROR) << "IV must be 12 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LOG_S(ERROR) << "input can not be empty. " << std::endl;
+        LOG(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 
     if (!inited)
     {
-        LOG_S(ERROR) << "WHY??? " << std::endl;
+        LOG(ERROR) << "WHY??? " << std::endl;
         return -4;
     }
 
     if (crypto_aead_aes256gcm_is_available() == 0)
     {
-        LOG_S(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
+        LOG(ERROR) << "NOT SUPPORT GCM ON THIS CPU." << std::endl;
         return -5;
     }
 

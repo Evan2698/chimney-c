@@ -15,7 +15,7 @@ Stream::Stream(int h) : handle(h)
 
 Stream::~Stream()
 {
-    LOG_S(INFO) << "~Stream["
+    LOG(INFO) << "~Stream["
                 << this->local.toString() << "------"
                 << this->remote.toString() << "]"
                 << std::endl;

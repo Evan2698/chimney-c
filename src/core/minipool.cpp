@@ -1,6 +1,6 @@
 #include "core/minipool.h"
 #include "core/g.h"
-#include <loguru.hpp>
+
 
 static const unsigned int offset = 32; // offset for start | align
 static const int capacity = 50;        // full size
@@ -10,7 +10,7 @@ unsigned char *MiniPool::Alloc()
     std::lock_guard<std::mutex> guard(_mutex);
     if (unuse_buffer.size() > 0)
     {
-        LOG_S(INFO) << "object in cache!!!" << std::endl;
+        LOG(INFO) << "object in cache!!!" << std::endl;
         auto p = unuse_buffer.front();
         unuse_buffer.pop();
         using_buffer.insert(std::pair<unsigned char *, unsigned char *>(p, p));
@@ -18,12 +18,12 @@ unsigned char *MiniPool::Alloc()
     }
     else
     {
-        LOG_S(INFO) << "there is no more object in cache.!!" << std::endl;
+        LOG(INFO) << "there is no more object in cache.!!" << std::endl;
         auto p = new unsigned char[BUFFER_SIZE_MAX];
         using_buffer.insert(std::pair<unsigned char *, unsigned char *>(p, p));
         return p;
     }
-    LOG_S(INFO) << "usage: " << using_buffer.size() << "  unused: "
+    LOG(INFO) << "usage: " << using_buffer.size() << "  unused: "
               << unuse_buffer.size() << std::endl;
 }
 
@@ -43,16 +43,16 @@ void MiniPool::Free(unsigned char *p)
             else
             {
                 delete[] p;
-                LOG_S(INFO) << "destory Mini Buffer immediately" << std::endl;
+                LOG(INFO) << "destory Mini Buffer immediately" << std::endl;
             }
         }
         else
         {
-            LOG_S(ERROR) << "CAN NOT RUN HERE!!!!!!!" << std::endl;
+            LOG(ERROR) << "CAN NOT RUN HERE!!!!!!!" << std::endl;
         }
     }
 
-    LOG_S(INFO) << "usage: " << using_buffer.size() << "  unused: "
+    LOG(INFO) << "usage: " << using_buffer.size() << "  unused: "
               << unuse_buffer.size() << "FREE BUFFER!!" << std::endl;
 }
 
@@ -67,7 +67,7 @@ unsigned MiniPool::size()
 
 MiniPool::~MiniPool()
 {
-    LOG_S(INFO) << "Need not Destory all object!" << std::endl;
+    LOG(INFO) << "Need not Destory all object!" << std::endl;
 }
 
 void MiniPool::init(int n)

@@ -7,8 +7,8 @@
                 "/home/evan/.conan/data/rapidjson/1.1.0/bincrafters/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include",  
                 "${workspaceFolder}/src/include",
                 "/home/evan/.conan/data/libsodium/1.0.18/bincrafters/stable/package/d50a0d523d98c15bb147b18fa7d203887c38be8b/include",
-                "${workspaceFolder}/3rd/loguru"
-                    ],
+                "/home/evan/.conan/data/glog/0.4.0/bincrafters/stable/package/319b23cd1fe4493ac8f5e56a80b2fdb72c210a7d/include"
+                 ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

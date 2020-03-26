@@ -10,19 +10,19 @@ int ChaCha20::Compress(const std::vector<unsigned char> &in,
 {
     if (key.size() != 32)
     {
-        LOG_S(INFO) << "key size must be 32 bytes long. " << std::endl;
+        LOG(INFO) << "key size must be 32 bytes long. " << std::endl;
         return -1;
     }
 
     if (m_IV.size() != 24)
     {
-        LOG_S(ERROR) << "IV must be 24 bytes long. " << std::endl;
+        LOG(ERROR) << "IV must be 24 bytes long. " << std::endl;
         return -2;
     }
 
     if (in.empty())
     {
-        LOG_S(ERROR) << "input can not be empty. " << std::endl;
+        LOG(ERROR) << "input can not be empty. " << std::endl;
         return -3;
     }
 
@@ -35,7 +35,7 @@ int ChaCha20::Compress(const std::vector<unsigned char> &in,
 
     if (n != 0) 
     {
-         LOG_S(ERROR) << "XChaCha20 call failed!!! " << std::endl;
+         LOG(ERROR) << "XChaCha20 call failed!!! " << std::endl;
     }
 
 

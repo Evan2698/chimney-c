@@ -9,7 +9,7 @@ struct Stream : public ReadWriteCloser
     Stream(int h);
     ~Stream();
 
-    virtual int Read(std::vector<unsigned char> &out);
+    virtual int Read(std::vector<unsigned char> &out, bool sync = false);
 
     virtual int Write(const std::vector<unsigned char> &src);
 

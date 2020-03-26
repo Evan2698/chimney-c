@@ -16,27 +16,55 @@ Stream::Stream(int h) : handle(h)
 Stream::~Stream()
 {
     LOG(INFO) << "~Stream["
-                << this->local.toString() << "------"
-                << this->remote.toString() << "]"
-                << std::endl;
+              << this->local.toString() << "------"
+              << this->remote.toString() << "]"
+              << std::endl;
     Close();
 }
 
-int Stream::Read(std::vector<unsigned char> &out)
+static int ReadXBytes(int socket, unsigned int x, void* buffer)
+{
+    unsigned bytesRead = 0;
+    ssize_t result;
+    while (bytesRead < x)
+    {
+        result = read(socket, buffer + bytesRead, x - bytesRead);
+        if (result < 1 )
+        {
+            return -1;
+        }
+        bytesRead += result;
+    }
+
+    return x;
+}
+
+int Stream::Read(std::vector<unsigned char> &out, bool sync)
 {
     if (out.empty())
         return -1;
 
-    auto ret = recv(this->handle, out.data(), out.size(), 0);
-    if (ret <= 0)
+    ssize_t ret  = 0;
+    if (!sync)
     {
-        return ret;
+        ret = read(this->handle, out.data(), out.size());
+        if (ret < 1)
+        {
+            return ret;
+        }
+    }
+    else
+    {
+       ret = ReadXBytes(this->handle, out.size(),out.data());
+       if (ret <=0 ){
+           return ret;
+       }
     }
 
     if (ret != out.size())
     {
         out.resize(ret);
-    }
+    }  
 
     return ret;
 }

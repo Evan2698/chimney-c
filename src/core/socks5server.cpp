@@ -158,7 +158,7 @@ static std::vector<unsigned char> ToBytes(unsigned int v)
     return nn;
 }
 
-static void proxy_read(std::shared_ptr<ThreadParameter> & param)
+static void proxy_read(std::shared_ptr<ThreadParameter> &param)
 {
     auto src = param->Src;
     auto key = param->Key;
@@ -172,7 +172,7 @@ static void proxy_read(std::shared_ptr<ThreadParameter> & param)
         if (n <= 0)
         {
             LOG(ERROR) << "Read failed!" << src->get_local().toString()
-                         << "<--->" << src->get_remote().toString() << " " << n;
+                       << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
 
@@ -192,13 +192,13 @@ static void proxy_read(std::shared_ptr<ThreadParameter> & param)
         if (n <= 0)
         {
             LOG(ERROR) << "write failed:" << dst->get_local().toString()
-                         << "<--->" << dst->get_remote().toString() << " " << n;
+                       << "<--->" << dst->get_remote().toString() << " " << n;
             break;
         }
     }
 }
 
-static void proxy_write(std::shared_ptr<ThreadParameter> & param)
+static void proxy_write(std::shared_ptr<ThreadParameter> &param)
 {
     auto src = param->Dst;
     auto key = param->Key;
@@ -208,13 +208,14 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
     while (true)
     {
         std::vector<unsigned char> out(4, 0);
-        int n = src->Read(out);
+        int n = src->Read(out, true);
         if (n <= 0)
         {
             LOG(ERROR) << "Read  LEN failed!" << src->get_local().toString()
-                         << "<--->" << src->get_remote().toString() << " " << n;
+                       << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
+        LOG(INFO) << "READ BYTES " << n << "  TEXT:  " << ToHexEX(out.begin(), out.end()) << std::endl;
 
         auto next = ToInt(out.data());
         if (next > BUFFER_SIZE_READ + 512)
@@ -223,13 +224,14 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
             break;
         }
         out.resize(next);
-        n = src->Read(out);
+        n = src->Read(out, true);
         if (n <= 0)
         {
             LOG(ERROR) << "Read conntent failed" << src->get_local().toString()
-                         << "<--->" << src->get_remote().toString() << " " << n;
+                       << "<--->" << src->get_remote().toString() << " " << n;
             break;
         }
+
         std::vector<unsigned char> tmp;
         n = I->UnCompress(out, key, tmp);
         if (n != 0)
@@ -243,13 +245,11 @@ static void proxy_write(std::shared_ptr<ThreadParameter> & param)
         if (n <= 0)
         {
             LOG(ERROR) << "Write failed" << dst->get_local().toString()
-                         << "<--->" << dst->get_remote().toString() << "  " << n;
+                       << "<--->" << dst->get_remote().toString() << "  " << n;
             break;
         }
     }
 }
-
-
 
 void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
 {
@@ -257,19 +257,20 @@ void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
         return;
 
     auto param = doConnect(src);
-    if (!param )
+    if (!param)
     {
         LOG(ERROR) << "Prepare thread paramter failed!!" << std::endl;
         return;
-    } 
+    }
 
-    if (!param->isValid()){
+    if (!param->isValid())
+    {
         LOG(ERROR) << "thread paramter is invalid!" << std::endl;
         return;
     }
-  
-    std::thread xox([&param](){
-         proxy_write(param);
+
+    std::thread xox([&param]() {
+        proxy_write(param);
     });
 
     proxy_read(param);

@@ -4,7 +4,7 @@
 
 struct ReadWriteCloser
 {
-    virtual int Read(std::vector<unsigned char> &out) = 0;
+    virtual int Read(std::vector<unsigned char> &out, bool sync = false) = 0;
 
     virtual int Write(const std::vector<unsigned char> &src) = 0;
 

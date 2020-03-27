@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <memory>
 #include "core/g.h"
+#include <signal.h>
 
 std::string get_my_path();
 std::shared_ptr<client> get_local_setting();
@@ -26,11 +27,9 @@ int main(int argc, char *argv[])
 {
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
-    FLAGS_colorlogtostderr=true;
+    FLAGS_colorlogtostderr = true;
     google::SetStderrLogging(google::FATAL);
-    
-   
- 
+
     auto settings = get_local_setting();
     if (!settings)
     {
@@ -52,12 +51,14 @@ int main(int argc, char *argv[])
     LOG(INFO) << "key:" << ToHexEX(key.begin(), key.end()) << std::endl;
     LOG(INFO) << "hash:" << ToHexEX(hash.begin(), hash.end()) << std::endl;
 
-    auto & client = PeerFactory::get_instance();
+    auto &client = PeerFactory::get_instance();
     client.set_key(key);
     client.set_user_pass(hash, hash);
     client.set_proxy(remote);
+    client.set_time_out(settings->timeout);
 
-    Socks5Server server(local);
+    signal(SIGPIPE, SIG_IGN);
+    Socks5Server server(local, settings->timeout);
     g_p = &server;
     signal(SIGINT, [](int sig) -> void {
         g_p->shutdown();
@@ -112,5 +113,6 @@ std::shared_ptr<client> get_local_setting()
     c->local_port = d["local_port"].GetInt();
     c->network = d["which"].GetString();
     c->pwd = d["password"].GetString();
+    c->timeout = d["timeout"].GetInt();
     return c;
 }

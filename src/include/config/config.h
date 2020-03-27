@@ -12,6 +12,8 @@ struct client
     std::string network;   
 
     std::string pwd;
+
+    unsigned int timeout;
 };
 
 

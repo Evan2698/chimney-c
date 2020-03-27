@@ -1,10 +1,10 @@
 #include "core/socks5peer.h"
 #include "core/g.h"
-#include "core/socket.h"
+#include "core/socketassistant.h"
 #include "core/func.hpp"
 
-Socks5Peer::Socks5Peer(const Bytes &k, const Bytes &u, const Bytes &p, const Address &remote) : key(k), user(u), pass(p),
-                                                                                                proxy(remote)
+Socks5Peer::Socks5Peer(const Bytes &k, const Bytes &u, const Bytes &p, const Address &remote, unsigned t) : 
+key(k), user(u), pass(p), proxy(remote), time(t)
 {
 }
 
@@ -16,12 +16,14 @@ std::shared_ptr<Stream> Socks5Peer::build_stream(const std::shared_ptr<Address> 
 {
     LOG(INFO) << "target address: " << target->toString() << std::endl;
 
-    auto fd = SocketBuilder::create_socket(proxy, "tcp");
+    auto fd = SocketAssistant::create_socket(proxy, "tcp");
     if (fd == -1)
     {
         LOG(ERROR) << "create socket failed: " << fd << std::endl;
         return nullptr;
     }
+    
+    SocketAssistant::set_socket_time(fd, this->time);
 
     auto out = std::make_shared<Stream>(fd);
     if (sayHello(out) != 0)

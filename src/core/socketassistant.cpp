@@ -1,9 +1,9 @@
-#include "core/socket.h"
+#include "core/socketassistant.h"
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "core/g.h"
-int SocketBuilder::create_socket(Address a, const std::string &network)
+int SocketAssistant::create_socket(Address a, const std::string &network)
 {
     LOG(INFO) << "create_socket " << a.toString();
     struct sockaddr_in address;
@@ -37,7 +37,7 @@ int SocketBuilder::create_socket(Address a, const std::string &network)
     return sock;
 }
 
-Address SocketBuilder::get_socket_local_address(int fd)
+Address SocketAssistant::get_socket_local_address(int fd)
 {
     struct sockaddr_storage addr = {0};
 
@@ -51,7 +51,7 @@ Address SocketBuilder::get_socket_local_address(int fd)
     return Address(reinterpret_cast<struct sockaddr *>(&addr));
 }
 
-int SocketBuilder::create_listening_socket(Address a, const std::string &network)
+int SocketAssistant::create_listening_socket(Address a, const std::string &network)
 {
     struct sockaddr_in address;
     address.sin_family = AF_INET;
@@ -78,4 +78,13 @@ int SocketBuilder::create_listening_socket(Address a, const std::string &network
         return -1;
     }
     return fd;
+}
+
+int SocketAssistant::set_socket_time(int fd, unsigned int time)
+{
+    struct timeval      tv = {0};
+    tv.tv_sec = time;
+    tv.tv_usec = 0;
+    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 }

@@ -1,10 +1,10 @@
 #include "core/peerfactory.h"
-#include "core/socket.h"
+#include "core/socketassistant.h"
 #include "core/func.hpp"
 #include <optional>
 #include "core/g.h"
 #include "core/socks5peer.h"
-PeerFactory::PeerFactory()
+PeerFactory::PeerFactory():time(300)
 {
 }
 
@@ -21,7 +21,8 @@ PeerFactory &PeerFactory::get_instance()
          this->key,
          this->user,
          this->pass,
-         this->proxy);
+         this->proxy,
+         this->time);
 
     return sp;
 
@@ -46,4 +47,9 @@ void PeerFactory::set_user_pass(const std::vector<unsigned char> &u, const std::
 
     this->pass.resize(p.size());
     std::copy(p.begin(), p.end(), pass.begin());
+}
+
+void PeerFactory::set_time_out(unsigned int t)
+{
+    this->time = t;
 }

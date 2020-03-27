@@ -5,7 +5,7 @@
 #include <memory>
 struct Socks5Server
 {
-    Socks5Server(Address listening);
+    Socks5Server(Address listening, unsigned t);
     ~Socks5Server();
 
     int run();
@@ -21,6 +21,7 @@ private:
 private:
     Address listen_address;
     int handle;
+    unsigned int time;
 };
 
 #endif

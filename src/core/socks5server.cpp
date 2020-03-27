@@ -1,5 +1,5 @@
 
-#include "core/socket.h"
+#include "core/socketassistant.h"
 #include "core/address.h"
 #include "core/stream.h"
 #include <thread>
@@ -12,7 +12,7 @@
 #include "core/threadparameter.h"
 #include "core/objectholder.hpp"
 
-Socks5Server::Socks5Server(Address listening) : listen_address(listening), handle(0)
+Socks5Server::Socks5Server(Address listening, unsigned t) : listen_address(listening), handle(0), time(t)
 {
 }
 Socks5Server::~Socks5Server()
@@ -237,7 +237,6 @@ static void proxy_write(std::shared_ptr<ThreadParameter> &param)
         if (n != 0)
         {
             LOG(ERROR) << "unzip failed!" << std::endl;
-            ;
             break;
         }
 
@@ -280,7 +279,7 @@ void Socks5Server::doServeOnOne(std::shared_ptr<Stream> src)
 
 int Socks5Server::run()
 {
-    handle = SocketBuilder::create_listening_socket(this->listen_address, "tcp");
+    handle = SocketAssistant::create_listening_socket(this->listen_address, "tcp");
     if (handle == -1)
     {
         LOG(ERROR) << "create socket fd faield: " << handle << std::endl;
@@ -305,6 +304,7 @@ int Socks5Server::run()
             LOG(ERROR) << "Error while Accepting on socket\n";
             break;
         }
+        SocketAssistant::set_socket_time(newFD, this->time);
         Address R((struct sockaddr_in *)&their_addr);
         this->build_service_routine(newFD, R);
     }

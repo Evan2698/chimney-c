@@ -17,6 +17,8 @@ struct PeerFactory
 
     void set_user_pass(const std::vector<unsigned char> &u, const std::vector<unsigned char> &p);
 
+    void set_time_out(unsigned int t);
+
 private:
     PeerFactory();
 
@@ -25,6 +27,7 @@ private:
     std::vector<unsigned char> user;
     std::vector<unsigned char> pass;
     Address proxy;
+    unsigned int time;
 };
 
 #endif

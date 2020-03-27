@@ -11,7 +11,7 @@ struct Socks5Peer : public Peer
 
     typedef std::vector<unsigned char > Bytes;
 
-    Socks5Peer(const Bytes &k, const Bytes &u, const Bytes &p, const Address & remote);
+    Socks5Peer(const Bytes &k, const Bytes &u, const Bytes &p, const Address & remote, unsigned t);
     virtual ~Socks5Peer();
 
     virtual std::shared_ptr<Stream> build_stream(const std::shared_ptr<Address> &target);
@@ -32,6 +32,7 @@ private:
     Bytes pass;
     Address proxy;
     std::shared_ptr<Privacy> method;
+    unsigned int time;
 };
 
 #endif

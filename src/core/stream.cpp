@@ -22,14 +22,14 @@ Stream::~Stream()
     Close();
 }
 
-static int ReadXBytes(int socket, unsigned int x, void* buffer)
+static int ReadXBytes(int socket, unsigned int x, void *buffer)
 {
     unsigned bytesRead = 0;
     ssize_t result;
     while (bytesRead < x)
     {
         result = read(socket, buffer + bytesRead, x - bytesRead);
-        if (result < 1 )
+        if (result < 1)
         {
             return -1;
         }
@@ -44,7 +44,7 @@ int Stream::Read(std::vector<unsigned char> &out, bool sync)
     if (out.empty())
         return -1;
 
-    ssize_t ret  = 0;
+    ssize_t ret = 0;
     if (!sync)
     {
         ret = read(this->handle, out.data(), out.size());
@@ -55,26 +55,46 @@ int Stream::Read(std::vector<unsigned char> &out, bool sync)
     }
     else
     {
-       ret = ReadXBytes(this->handle, out.size(),out.data());
-       if (ret <=0 ){
-           return ret;
-       }
+        ret = ReadXBytes(this->handle, out.size(), out.data());
+        if (ret <= 0)
+        {
+            return ret;
+        }
     }
 
     if (ret != out.size())
     {
         out.resize(ret);
-    }  
+    }
 
     return ret;
 }
 
 int Stream::Write(const std::vector<unsigned char> &src)
 {
-    auto nbytes = send(this->handle, src.data(), src.size(), 0);
-    if (nbytes <= 0)
+    if (src.empty())
     {
-        return nbytes;
+        return 0;
+    }
+
+    decltype(src.size()) index = 0;
+    decltype(src.data()) buffer = src.data();
+
+    ssize_t nbytes = 0;
+
+    while (index < src.size())
+    {
+        nbytes = send(this->handle, buffer + index, src.size() - index, MSG_NOSIGNAL);
+        if (nbytes <= 0)
+        {
+            break;
+        }
+        index += nbytes;
+    }
+    
+    if (nbytes > 0) 
+    {
+        nbytes = index;
     }
 
     return nbytes;

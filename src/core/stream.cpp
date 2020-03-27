@@ -28,7 +28,7 @@ static int ReadXBytes(int socket, unsigned int x, void *buffer)
     ssize_t result;
     while (bytesRead < x)
     {
-        result = read(socket, buffer + bytesRead, x - bytesRead);
+        result = recv(socket, buffer + bytesRead, x - bytesRead, MSG_NOSIGNAL);
         if (result < 1)
         {
             return -1;
@@ -47,7 +47,7 @@ int Stream::Read(std::vector<unsigned char> &out, bool sync)
     ssize_t ret = 0;
     if (!sync)
     {
-        ret = read(this->handle, out.data(), out.size());
+        ret = recv(this->handle, out.data(), out.size(), MSG_NOSIGNAL);
         if (ret < 1)
         {
             return ret;

@@ -303,8 +303,7 @@ int Socks5Server::run()
         {
             LOG(ERROR) << "Error while Accepting on socket\n";
             break;
-        }
-        SocketAssistant::set_socket_time(newFD, this->time);
+        }       
         Address R((struct sockaddr_in *)&their_addr);
         this->build_service_routine(newFD, R);
     }
@@ -314,6 +313,7 @@ int Socks5Server::run()
 
 void Socks5Server::build_service_routine(int fd, Address &R)
 {
+    SocketAssistant::set_socket_time(fd, this->time);
     auto out = std::make_shared<Stream>(fd, listen_address, R);
     std::thread wh([out]() {
         doServeOnOne(out);

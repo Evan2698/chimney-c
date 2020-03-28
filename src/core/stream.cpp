@@ -22,10 +22,14 @@ Stream::~Stream()
     Close();
 }
 
-static int ReadXBytes(int socket, unsigned int x, void *buffer)
+static int ReadXBytes(int socket, unsigned int x, void *p)
 {
+
     unsigned bytesRead = 0;
     ssize_t result;
+
+    unsigned char * buffer =reinterpret_cast<unsigned char*>(p);
+
     while (bytesRead < x)
     {
         result = recv(socket, buffer + bytesRead, x - bytesRead, MSG_NOSIGNAL);

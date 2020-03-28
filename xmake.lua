@@ -13,4 +13,3 @@ target("chimney-c")
     add_links("pthread", "dl")
     add_packages("libsodium", "glog")
  
-

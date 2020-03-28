@@ -10,3 +10,9 @@
 [submodule "3rd/loguru"]
 	path = 3rd/loguru
 	url = https://github.com/emilk/loguru.git
+[submodule "3rd/glog"]
+	path = 3rd/glog
+	url = https://github.com/google/glog.git
+[submodule "3rd/gflags"]
+	path = 3rd/gflags
+	url = https://github.com/gflags/gflags

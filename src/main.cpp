@@ -19,6 +19,8 @@
 #include <memory>
 #include "core/g.h"
 #include <signal.h>
+#include <thread>
+#include "udpserver/udpserver.h"
 
 std::string get_my_path();
 std::shared_ptr<client> get_local_setting();
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
     FLAGS_colorlogtostderr = true;
-    google::SetStderrLogging(google::FATAL);
+    google::SetStderrLogging(google::INFO);
 
     auto settings = get_local_setting();
     if (!settings)
@@ -64,6 +66,20 @@ int main(int argc, char *argv[])
         g_p->shutdown();
         LOG(INFO) << "signal " << sig << std::endl;
         exit(3);
+    });
+
+    std::thread tt([&settings, &key]()-> void {
+        Address localudp(settings->local, settings->local_udp, Address::Type::ipv4);
+        Address remoteudp(settings->server, settings->udp_port, Address::Type::ipv4);
+
+        auto ui = PrivacyBase::build_privacy_method(settings->methodName);
+        if (!ui.has_value()){
+              LOG(INFO) << "build privacy failed !!!!" << std::endl;
+              return;
+        }
+
+        UDPServer server(localudp, remoteudp, ui.value(), key);
+        server.Run();
     });
 
     auto ret = server.run();
@@ -110,9 +126,12 @@ std::shared_ptr<client> get_local_setting()
     c->server_port = d["server_port"].GetInt();
     c->server = d["server"].GetString();
     c->local = d["local"].GetString();
+    c->udp_port = d["udp_port"].GetInt();
     c->local_port = d["local_port"].GetInt();
+    c->local_udp = d["local_udp_port"].GetInt();
     c->network = d["which"].GetString();
     c->pwd = d["password"].GetString();
     c->timeout = d["timeout"].GetInt();
+    c->methodName = d["method"].GetString();
     return c;
 }

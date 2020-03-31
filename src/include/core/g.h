@@ -12,6 +12,8 @@
 
 #define BUFFER_SIZE_MAX       2560
 #define BUFFER_SIZE_READ      2048
+#define BUFFER_UDP_SIZE       4096
+#define UDP_READ_SIZE         3072  
 
 
 

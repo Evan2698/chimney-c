@@ -4,10 +4,16 @@
 struct client
 {
     std::string server;
-    short  server_port;
+    unsigned short  server_port;
 
     std::string local;
-    short local_port;
+    unsigned short local_port;
+
+    unsigned short udp_port;
+
+    unsigned short local_udp;
+
+    std::string methodName;
 
     std::string network;   
 

@@ -11,6 +11,7 @@
 #include "core/socks5server.h"
 #include "core/threadparameter.h"
 #include "core/objectholder.hpp"
+#include "core/funs.h"
 
 Socks5Server::Socks5Server(Address listening, unsigned t) : listen_address(listening), handle(0), time(t)
 {
@@ -137,26 +138,6 @@ static std::shared_ptr<ThreadParameter> doConnect(std::shared_ptr<Stream> &sp)
     return parameter;
 }
 
-static unsigned int ToInt(unsigned char *sz)
-{
-    unsigned hi = sz[0];
-    hi = hi << 24;
-    hi = hi | (((unsigned)sz[1]) << 16);
-    hi = hi | (((unsigned)sz[2]) << 8);
-    hi = hi | sz[3];
-
-    return hi;
-}
-
-static std::vector<unsigned char> ToBytes(unsigned int v)
-{
-    std::vector<unsigned char> nn(4, 0);
-    nn[3] = v & 0xff;
-    nn[2] = (v >> 8) & 0xff;
-    nn[1] = (v >> 16) & 0xff;
-    nn[0] = (v >> 24) & 0xff;
-    return nn;
-}
 
 static void proxy_read(std::shared_ptr<ThreadParameter> &param)
 {
@@ -184,7 +165,7 @@ static void proxy_read(std::shared_ptr<ThreadParameter> &param)
             break;
         }
         out.resize(tmp.size() + 4);
-        auto len = ToBytes(tmp.size());
+        auto len = Funcs::ToBytes(tmp.size());
         std::copy(len.begin(), len.end(), out.begin());
         std::copy(tmp.begin(), tmp.end(), out.begin() + 4);
 
@@ -217,7 +198,7 @@ static void proxy_write(std::shared_ptr<ThreadParameter> &param)
         }
         LOG(INFO) << "READ BYTES " << n << "  TEXT:  " << ToHexEX(out.begin(), out.end()) << std::endl;
 
-        auto next = ToInt(out.data());
+        auto next = Funcs::ToInt(out.data());
         if (next > BUFFER_SIZE_READ + 512)
         {
             LOG(ERROR) << "NEXT READ LEN is too big. " << next << std::endl;

@@ -9,6 +9,7 @@
 #include "privacy/xcha20_poly1305.h"
 #include "sodium.h"
 #include "core/g.h"
+#include <ctime>
 
 std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const std::vector<unsigned char> &bytes_stream)
 {
@@ -63,6 +64,50 @@ std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(const 
 	return sp;
 }
 
+static std::vector<unsigned char> generatorIV(int bytes)
+{
+	std::srand(std::time(nullptr));
+	std::vector<unsigned char> out(bytes, 0);
+
+	for (int i = 0; i < bytes; ++i)
+	{
+		out[i] = std::rand();
+	}
+
+	return out;
+}
+
+std::optional<std::shared_ptr<Privacy>> PrivacyBase::build_privacy_method(
+	const std::string &src)
+{
+	if ("CHACHA-POLY1305" == src)
+	{
+		auto sp = std::shared_ptr<Privacy>(new XChaCha20Poly1305());
+		sp->SetIV(generatorIV(24));
+		return sp;
+	}
+	else if ("CHACHA-20" == src)
+	{
+		auto sp = std::shared_ptr<Privacy>(new ChaCha20());
+		sp->SetIV(generatorIV(24));
+		return sp;
+	}
+	else if ("AES-GCM" == src)
+	{
+		auto sp = std::shared_ptr<Privacy>(new GCM());
+		sp->SetIV(generatorIV(12));
+		return sp;
+	}
+	else if ("RAW" == src)
+	{
+		auto sp = std::shared_ptr<Privacy>(new RawEncrypt());
+		sp->SetIV(generatorIV(24));
+		return sp;
+	}
+
+	return std::nullopt;
+}
+
 std::optional<std::vector<unsigned char>> PrivacyBase::make_hmac(const std::vector<unsigned char> &key, const std::vector<unsigned char> &msg)
 {
 	std::vector<unsigned char> out(32, 0);
@@ -82,8 +127,6 @@ std::optional<std::vector<unsigned char>> PrivacyBase::make_hmac(const std::vect
 static unsigned char sz_sha1_base[] = "E234V678A012N456I890O234V678U012";
 std::optional<std::vector<unsigned char>> PrivacyBase::make_sha1(const std::vector<unsigned char> &src)
 {
-	static std::vector<unsigned char> key(std::begin(sz_sha1_base), std::begin(sz_sha1_base)+32);
-	return make_hmac(key,src);	
+	static std::vector<unsigned char> key(std::begin(sz_sha1_base), std::begin(sz_sha1_base) + 32);
+	return make_hmac(key, src);
 }
-
-

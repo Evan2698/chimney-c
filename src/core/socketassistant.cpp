@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "core/g.h"
+#include <arpa/inet.h>
 int SocketAssistant::create_socket(Address a, const std::string &network)
 {
     LOG(INFO) << "create_socket " << a.toString();
@@ -22,9 +23,10 @@ int SocketAssistant::create_socket(Address a, const std::string &network)
     {
         LOG(ERROR) << "create socket failed: " << sock << std::endl;
         return -1;
-    }    
+    }
 
-    LOG(INFO) << "create_socket " << "will connect!!!" << address.sin_addr.s_addr << " X " << address.sin_port;
+    LOG(INFO) << "create_socket "
+              << "will connect!!!" << address.sin_addr.s_addr << " X " << address.sin_port;
     if ((err = connect(sock, (struct sockaddr *)&address, sizeof(address))) < 0)
     {
         close(sock);
@@ -32,7 +34,7 @@ int SocketAssistant::create_socket(Address a, const std::string &network)
         return -1;
     }
 
-    LOG(INFO) << "Connect success~";   
+    LOG(INFO) << "Connect success~";
 
     return sock;
 }
@@ -63,7 +65,7 @@ int SocketAssistant::create_listening_socket(Address a, const std::string &netwo
         return -1;
     }
     auto fd = socket(AF_INET, SOCK_STREAM, 0);
-  /*  if (fd > 0)
+    /*  if (fd > 0)
     {
         fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
     }*/
@@ -82,9 +84,64 @@ int SocketAssistant::create_listening_socket(Address a, const std::string &netwo
 
 int SocketAssistant::set_socket_time(int fd, unsigned int time)
 {
-    struct timeval      tv = {0};
+    struct timeval tv = {0};
     tv.tv_sec = time;
     tv.tv_usec = 0;
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+}
+
+int SocketAssistant::create_udp_listening_socket(Address a)
+{
+
+    LOG(INFO) << a.host() << "--->" << a.port() << std::endl;
+
+    struct sockaddr_in ser_addr = {0};
+    ser_addr.sin_family = AF_INET;
+
+    ser_addr.sin_port = htons(a.port());
+    auto err = inet_pton(AF_INET, a.host().c_str(), &ser_addr.sin_addr);
+    if (err < 0)
+    {
+        LOG(ERROR) << "create socket failed: " << err << std::endl;
+        return -1;
+    }
+
+    int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (server_fd < 0)
+    {
+        LOG(ERROR) << "create udp socket: " << server_fd << std::endl;
+        return -1;
+    }
+
+    auto ret = bind(server_fd, (struct sockaddr *)&ser_addr, sizeof(ser_addr));
+    if (ret < 0)
+    {
+        close(server_fd);
+        LOG(ERROR) << "bind address  " << ret << std::endl;
+        return -1;
+    }
+
+    return server_fd;
+}
+
+int SocketAssistant::create_udp_connect_socket(Address a)
+{
+    int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    return server_fd;
+}
+
+std::optional<sockaddr_in> SocketAssistant::create_udp_connect_addr(Address a)
+{
+    struct sockaddr_in servaddr = {0};
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(a.port());
+    auto err = inet_pton(AF_INET, a.host().c_str(), &servaddr.sin_addr);
+    if (err < 0)
+    {
+        LOG(ERROR) << "parse host address failed: " << err << std::endl;
+        return std::nullopt;
+    }
+
+    return servaddr;
 }

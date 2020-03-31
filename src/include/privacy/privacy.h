@@ -42,6 +42,9 @@ struct PrivacyBase
 
     static std::optional<std::vector<unsigned char>> make_sha1(
         const std::vector<unsigned char> &src);
+
+    static std::optional<std::shared_ptr<Privacy>>  build_privacy_method(
+        const std::string &src);
 };
 
 #endif

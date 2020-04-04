@@ -3,7 +3,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "core/g.h"
-#include <arpa/inet.h>
+
+#ifndef __ANDROID__
+int (*g_protect_Fun)(int) = nullptr;
+#else
+extern int (*g_protect_Fun)(int);
+#endif
+
 int SocketAssistant::create_socket(Address a, const std::string &network)
 {
     LOG(INFO) << "create_socket " << a.toString();
@@ -23,6 +29,12 @@ int SocketAssistant::create_socket(Address a, const std::string &network)
     {
         LOG(ERROR) << "create socket failed: " << sock << std::endl;
         return -1;
+    }
+
+    if (g_protect_Fun != nullptr)
+    {
+        g_protect_Fun(sock);
+        LOG(INFO) << "protect for android! " << sock << std::endl;
     }
 
     LOG(INFO) << "create_socket "

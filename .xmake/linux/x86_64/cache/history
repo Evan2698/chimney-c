@@ -37,6 +37,10 @@
         "xmake ",
         "xmake ",
         "xmake ",
-        "xmake "
+        "xmake ",
+        "xmake l /home/evan/.vscode/extensions/tboox.xmake-vscode-1.3.3/assets/config.lua",
+        "xmake l /home/evan/.vscode/extensions/tboox.xmake-vscode-1.3.3/assets/config.lua",
+        "xmake l /home/evan/.vscode/extensions/tboox.xmake-vscode-1.3.3/assets/config.lua",
+        "xmake l /home/evan/.vscode/extensions/tboox.xmake-vscode-1.3.3/assets/config.lua"
     }
 }

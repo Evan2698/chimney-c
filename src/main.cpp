@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     UNREFERENCED_PARAMETER(argc);
     google::InitGoogleLogging(argv[0]);
     FLAGS_colorlogtostderr = true;
-    google::SetStderrLogging(google::INFO);
+    google::SetStderrLogging(google::FATAL);
 
     auto settings = get_local_setting();
     if (!settings)

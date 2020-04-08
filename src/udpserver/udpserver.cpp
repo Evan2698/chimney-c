@@ -5,12 +5,18 @@
 #include "udpserver/udppack.h"
 #include "core/func.hpp"
 
-UDPServer::UDPServer(Address l, Address r, std::shared_ptr<Privacy> &i, std::vector<unsigned char> &v) : local(l), remote(r), I(i), key(v)
+UDPServer::UDPServer(Address l, Address r, std::shared_ptr<Privacy> &i,
+                     std::vector<unsigned char> &v) : local(l), remote(r), I(i), key(v), stop(false)
 {
 }
 
 UDPServer::~UDPServer()
 {
+}
+
+void UDPServer::stop_server()
+{
+    stop = true;
 }
 
 int UDPServer::Run()
@@ -42,8 +48,12 @@ int UDPServer::Run()
         struct sockaddr_in client_address = {0};
         socklen_t client_address_len = sizeof(sockaddr_in);
 
-        auto pRead = buffer + 1024;
+        if (stop)
+        {
+            break;
+        }
 
+        auto pRead = buffer + 1024;
         ssize_t n = recvfrom(fd, pRead, UDP_READ_SIZE,
                              MSG_WAITALL, (struct sockaddr *)&client_address,
                              &client_address_len);
@@ -52,7 +62,6 @@ int UDPServer::Run()
             LOG(ERROR) << "recv failed" << n << std::endl;
             continue;
         }
-
         std::vector<unsigned char> out;
         int zn = this->I->Compress(std::vector<unsigned char>(pRead, pRead + n), this->key, out);
         if (zn != 0)
@@ -128,4 +137,5 @@ int UDPServer::Run()
     }
 
     delete[] buffer;
+    close(fd);
 }

@@ -10,6 +10,7 @@ private:
   Address remote;
   std::shared_ptr<Privacy> I;
   std::vector<unsigned char> key;
+  volatile bool stop;
 
   
 public:
@@ -17,6 +18,8 @@ public:
     ~UDPServer();
 
     int Run();
+
+    void stop_server();
 };
 
 #endif

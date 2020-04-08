@@ -16,6 +16,7 @@ set (CORE_SRCS
   ${current_dir}/src/core/socks5peer.cpp
   ${current_dir}/src/core/socks5server.cpp
   ${current_dir}/src/core/stream.cpp
+  ${current_dir}/src/core/mobile_core.cpp
 )
 
 set (PRIVACY_SRCS

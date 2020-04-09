@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     el::Helpers::setCrashHandler(myCrashHandler); 
     el::Configurations defaultConf;
     defaultConf.setToDefault();
-    defaultConf.parseFromText("*GLOBAL:\n ENABLED = true \n TO_FILE =  false \n FORMAT=%datetime{%d/%M} [%thread] %file:%line %msg");
+    defaultConf.parseFromText("*GLOBAL:\n ENABLED = false \n TO_FILE =  false \n FORMAT=%datetime{%d/%M} [%thread] %file:%line %msg");
     el::Loggers::reconfigureLogger("default", defaultConf);
   
     UNREFERENCED_PARAMETER(argc);

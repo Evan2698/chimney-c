@@ -62,13 +62,13 @@ int GCM::Compress(const std::vector<unsigned char> &in,
     out.resize(alloSize(in.size()));
 
     unsigned long long ciphertext_len = out.size();
-    crypto_aead_aes256gcm_encrypt(out.data(), &ciphertext_len,
+    auto ret = crypto_aead_aes256gcm_encrypt(out.data(), &ciphertext_len,
                                   in.data(), in.size(),
                                   nullptr, 0,
                                   nullptr, m_iv.data(), key.data());
     out.resize(ciphertext_len);
 
-    return 0;
+    return (ret == 0) ? ret :  1;
 }
 
 int GCM::UnCompress(const std::vector<unsigned char> &in,
@@ -108,7 +108,7 @@ int GCM::UnCompress(const std::vector<unsigned char> &in,
     out.resize(alloSize(in.size()));
 
     unsigned long long decrypted_len = out.size();
-    crypto_aead_aes256gcm_decrypt(out.data(), &decrypted_len,
+    auto ret = crypto_aead_aes256gcm_decrypt(out.data(), &decrypted_len,
                                   nullptr,
                                   in.data(), in.size(),
                                   nullptr,
@@ -116,7 +116,7 @@ int GCM::UnCompress(const std::vector<unsigned char> &in,
                                   m_iv.data(), key.data());
     out.resize(decrypted_len);
 
-    return 0;
+    return (ret == 0) ? 0 : 1;
 }
 
 std::vector<unsigned char> GCM::ToBytes()

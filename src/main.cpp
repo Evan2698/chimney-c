@@ -19,14 +19,22 @@
 
 std::string get_my_path();
 std::shared_ptr<client> get_local_setting();
+INITIALIZE_EASYLOGGINGPP
+void myCrashHandler(int sig) {
+    LOG(ERROR) << "Woops! Crashed!";     
+    // FOLLOWING LINE IS ABSOLUTELY NEEDED AT THE END IN ORDER TO ABORT APPLICATION
+    el::Helpers::crashAbort(sig);
+}
 
 int main(int argc, char *argv[])
 {
+    el::Helpers::setCrashHandler(myCrashHandler); 
+    el::Configurations defaultConf;
+    defaultConf.setToDefault();
+    defaultConf.parseFromText("*GLOBAL:\n ENABLED = false \n TO_FILE =  false");
+    el::Loggers::reconfigureLogger("default", defaultConf);
+  
     UNREFERENCED_PARAMETER(argc);
-    google::InitGoogleLogging(argv[0]);
-    FLAGS_colorlogtostderr = true;
-    google::SetStderrLogging(google::INFO);
-
     auto settings = get_local_setting();
     if (!settings)
     {

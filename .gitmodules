@@ -16,3 +16,6 @@
 [submodule "3rd/gflags"]
 	path = 3rd/gflags
 	url = https://github.com/gflags/gflags
+[submodule "3rd/easyloggingpp"]
+	path = 3rd/easyloggingpp
+	url = https://github.com/amrayn/easyloggingpp.git

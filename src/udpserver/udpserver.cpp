@@ -4,6 +4,7 @@
 #include "core/funs.h"
 #include "udpserver/udppack.h"
 #include "core/func.hpp"
+#include <unistd.h>
 
 UDPServer::UDPServer(Address l, Address r, std::shared_ptr<Privacy> &i,
                      std::vector<unsigned char> &v) : local(l), remote(r), I(i), key(v), stop(false)

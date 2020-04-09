@@ -17,5 +17,5 @@
 
 
 
-#include <glog/logging.h>
+#include <easylogging++.h>
 #endif 

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(chimney-c)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 set (current_dir  ${CMAKE_CURRENT_SOURCE_DIR})
@@ -25,6 +26,7 @@ set (PRIVACY_SRCS
   ${current_dir}/src/privacy/privacy.cpp
   ${current_dir}/src/privacy/raw.cpp
   ${current_dir}/src/privacy/xcha20_poly1305.cpp 
+  ${current_dir}/src/privacy/xchacha20.cpp
 )
 
 set (UDPSERVER_SRCS
@@ -42,15 +44,17 @@ set (MAIN_SRCS
 set (NAV_INCLUDE_DIR
     ${current_dir}/src/include
     ${current_dir}/3rd/libsodium/src/libsodium/include
-    ${current_dir}/3rd/glog/src
+    ${current_dir}/3rd/easyloggingpp/src
     ${current_dir}/3rd/rapidjson/include)
 
 
-add_subdirectory(3rd/glog)
-add_subdirectory(3rd/gflags)
+add_subdirectory(3rd/easyloggingpp)
+
   
 add_executable(chimney-c ${MAIN_SRCS})
 target_include_directories(chimney-c PRIVATE  ${NAV_INCLUDE_DIR})
+target_compile_definitions(chimney-c PRIVATE  ELPP_THREAD_SAFE  ELPP_FEATURE_ALL
+)
 
 target_link_libraries( # Specifies the target library.
                        chimney-c
@@ -59,8 +63,6 @@ target_link_libraries( # Specifies the target library.
 
                        pthread
 
-                       glog
-
-                       gflags
+                       easyloggingpp
 
                        )

@@ -284,7 +284,8 @@ int Socks5Server::run()
         {
             LOG(ERROR) << "Error while Accepting on socket\n";
             break;
-        }       
+        }
+        LOG(INFO) << "newFD= " << newFD << std::endl;       
         Address R((struct sockaddr_in *)&their_addr);
         this->build_service_routine(newFD, R);
     }

@@ -11,7 +11,7 @@ static Socks5Server *g_tcpServer = nullptr;
 static UDPServer *g_udpServer = nullptr;
 static std::thread *g_tcpRoutine = nullptr;
 static std::thread *g_udpRoutine = nullptr;
-
+INITIALIZE_EASYLOGGINGPP
 int start_server(client *settings)
 {
     std::string whereru = "WhereRU";

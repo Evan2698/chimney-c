@@ -1,0 +1,116 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "C"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_C
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_aead/aes256gcm/aesni/aead_aes256gcm_aesni.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_aead/aes256gcm/aesni/aead_aes256gcm_aesni.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_aead/chacha20poly1305/sodium/aead_chacha20poly1305.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_aead/chacha20poly1305/sodium/aead_chacha20poly1305.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_aead/xchacha20poly1305/sodium/aead_xchacha20poly1305.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_aead/xchacha20poly1305/sodium/aead_xchacha20poly1305.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_auth/hmacsha256/auth_hmacsha256.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_auth/hmacsha256/auth_hmacsha256.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_core/ed25519/ref10/ed25519_ref10.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_core/ed25519/ref10/ed25519_ref10.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_core/hchacha20/core_hchacha20.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_core/hchacha20/core_hchacha20.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_core/hsalsa20/ref2/core_hsalsa20_ref2.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_core/hsalsa20/ref2/core_hsalsa20_ref2.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_core/salsa/ref/core_salsa_ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_core/salsa/ref/core_salsa_ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-compress-ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_generichash/blake2b/ref/blake2b-compress-ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_generichash/crypto_generichash.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_generichash/crypto_generichash.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_hash/sha256/cp/hash_sha256_cp.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_hash/sha256/cp/hash_sha256_cp.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_onetimeauth/poly1305/donna/poly1305_donna.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_onetimeauth/poly1305/donna/poly1305_donna.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-core.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/argon2-core.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-encoding.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/argon2-encoding.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/argon2-fill-block-ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/argon2.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/argon2.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/blake2b-long.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/blake2b-long.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/pwhash_argon2i.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/pwhash_argon2i.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/argon2/pwhash_argon2id.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/argon2/pwhash_argon2id.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_pwhash/crypto_pwhash.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_pwhash/crypto_pwhash.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_scalarmult/curve25519/ref10/x25519_ref10.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_scalarmult/curve25519/ref10/x25519_ref10.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/chacha20/ref/chacha20_ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/chacha20/ref/chacha20_ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/chacha20/stream_chacha20.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/chacha20/stream_chacha20.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/crypto_stream.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/crypto_stream.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/salsa20/stream_salsa20.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/salsa20/stream_salsa20.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/xchacha20/stream_xchacha20.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/xchacha20/stream_xchacha20.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_stream/xsalsa20/stream_xsalsa20.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_stream/xsalsa20/stream_xsalsa20.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/crypto_verify/sodium/verify.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/crypto_verify/sodium/verify.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/randombytes/randombytes.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/randombytes/randombytes.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/sodium/codecs.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/sodium/codecs.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/sodium/core.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/sodium/core.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/sodium/runtime.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/sodium/runtime.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/sodium/utils.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/sodium/utils.c.o"
+  "/home/evan/MyWorks/chimney-c/3rd/libsodium/src/libsodium/sodium/version.c" "/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir/src/libsodium/sodium/version.c.o"
+  )
+set(CMAKE_C_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_C
+  "ASM_HIDE_SYMBOL=.hidden"
+  "CONFIGURED=1"
+  "DEV_MODE=1"
+  "HAVE_AMD64_ASM_V=1"
+  "HAVE_ARC4RANDOM=1"
+  "HAVE_ARC4RANDOM_BUF=1"
+  "HAVE_ATOMIC_OPS=1"
+  "HAVE_AVX_ASM_V=1"
+  "HAVE_CPUID=1"
+  "HAVE_CPUID_V=1"
+  "HAVE_DLFCN_H=1"
+  "HAVE_GETPID=1"
+  "HAVE_INTTYPES_H=1"
+  "HAVE_MADVISE=1"
+  "HAVE_MEMORY_H=1"
+  "HAVE_MLOCK=1"
+  "HAVE_MMAP=1"
+  "HAVE_MPROTECT=1"
+  "HAVE_NANOSLEEP=1"
+  "HAVE_POSIX_MEMALIGN=1"
+  "HAVE_PTHREAD=1"
+  "HAVE_STDINT_H=1"
+  "HAVE_STDLIB_H=1"
+  "HAVE_STRINGS_H=1"
+  "HAVE_STRING_H=1"
+  "HAVE_SYS_MMAN_H=1"
+  "HAVE_SYS_STAT_H=1"
+  "HAVE_SYS_TYPES_H=1"
+  "HAVE_TI_MODE_V=1"
+  "HAVE_TMMINTRIN_H=1"
+  "HAVE_UNISTD_H=1"
+  "HAVE_WEAK_SYMBOLS=1"
+  "HAVE_WMMINTRIN_H=1"
+  "LT_OBJDIR=\".libs/\""
+  "NATIVE_LITTLE_ENDIAN=1"
+  "PACKAGE=\"libsodium\""
+  "PACKAGE_BUGREPORT=\"https://github.com/jedisct1/libsodium/issues\""
+  "PACKAGE_NAME=\"libsodium\""
+  "PACKAGE_STRING=\"libsodium-1.0.18\""
+  "PACKAGE_TARNAME=\"libsodium\""
+  "PACKAGE_URL=\"https://github.com/jedisct1/libsodium\""
+  "PACKAGE_VERSION=\"1.0.18\""
+  "STDC_HEADERS=1"
+  "VERSION=\"1.0.18\""
+  "_ALL_SOURCE=1"
+  "_GNU_SOURCE=1"
+  "_POSIX_PTHREAD_SEMANTICS=1"
+  "_TANDEM_SOURCE=1"
+  "__EXTENSIONS__=1"
+  "__x86_64__=1"
+  )
+
+# The include file search paths:
+set(CMAKE_C_TARGET_INCLUDE_PATH
+  "../3rd/libsodium/src/libsodium/include"
+  "../3rd/libsodium/src/libsodium/include/sodium"
+  "../3rd/libsodium/src/libsodium/include/sodium/private"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

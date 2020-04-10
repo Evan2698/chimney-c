@@ -19,7 +19,7 @@
 
 std::string get_my_path();
 std::shared_ptr<client> get_local_setting();
-INITIALIZE_EASYLOGGINGPP
+
 void myCrashHandler(int sig) {
     LOG(ERROR) << "Woops! Crashed!";     
     // FOLLOWING LINE IS ABSOLUTELY NEEDED AT THE END IN ORDER TO ABORT APPLICATION

@@ -49,15 +49,16 @@ set (NAV_INCLUDE_DIR
 
 
 add_subdirectory(3rd/easyloggingpp)
+add_subdirectory(3rd/libsodium)
 
   
 add_executable(chimney-c ${MAIN_SRCS})
 target_include_directories(chimney-c PRIVATE  ${NAV_INCLUDE_DIR})
-target_compile_definitions(chimney-c PRIVATE  ELPP_THREAD_SAFE  ELPP_FEATURE_ALL
-)
-
-target_link_libraries( # Specifies the target library.
+target_compile_definitions(chimney-c PRIVATE  ELPP_THREAD_SAFE  ELPP_FEATURE_ALL)
+target_link_libraries(
                        chimney-c
+
+                       PRIVATE
 
                        sodium
 

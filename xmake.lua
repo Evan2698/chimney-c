@@ -88,9 +88,13 @@ target("sodium")
 		"HAVE_GETPID=1",                   
 		"CONFIGURED=1",
         "DEV_MODE=1",
---[[#PC on here]]
-        "HAVE_TMMINTRIN_H=1",
+		"HAVE_TMMINTRIN_H=1",
         "HAVE_WMMINTRIN_H=1",
+--[[#PC on here]]
+        "HAVE_AMD64_ASM_V=1",
+		"HAVE_AVX_ASM_V=1",
+		"AVE_CPUID_V=1",
+		"HAVE_TI_MODE_V=1",      
         "HAVE_CPUID=1",
         "__x86_64__=1")
     add_includedirs(

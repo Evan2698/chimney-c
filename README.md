@@ -33,3 +33,11 @@ git submodule update
 git submodule update --init --recursive
 
 https://github.com/amrayn/easyloggingpp.git
+
+
+android 特有的
+
+HAVE_ANDROID_GETCPUFEATURES
+__aarch64__ v8
+
+__ARM_NEON v7

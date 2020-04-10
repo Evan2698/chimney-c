@@ -1,9 +1,0 @@
-/home/evan/MyWorks/chimney-c/build/CMakeFiles/rebuild_cache.dir
-/home/evan/MyWorks/chimney-c/build/CMakeFiles/chimney-c.dir
-/home/evan/MyWorks/chimney-c/build/CMakeFiles/edit_cache.dir
-/home/evan/MyWorks/chimney-c/build/3rd/easyloggingpp/CMakeFiles/rebuild_cache.dir
-/home/evan/MyWorks/chimney-c/build/3rd/easyloggingpp/CMakeFiles/easyloggingpp.dir
-/home/evan/MyWorks/chimney-c/build/3rd/easyloggingpp/CMakeFiles/edit_cache.dir
-/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/rebuild_cache.dir
-/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/sodium.dir
-/home/evan/MyWorks/chimney-c/build/3rd/libsodium/CMakeFiles/edit_cache.dir

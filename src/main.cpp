@@ -20,20 +20,10 @@
 std::string get_my_path();
 std::shared_ptr<client> get_local_setting();
 
-void myCrashHandler(int sig) {
-    LOG(ERROR) << "Woops! Crashed!";     
-    // FOLLOWING LINE IS ABSOLUTELY NEEDED AT THE END IN ORDER TO ABORT APPLICATION
-    el::Helpers::crashAbort(sig);
-}
 
 int main(int argc, char *argv[])
 {
-    el::Helpers::setCrashHandler(myCrashHandler); 
-    el::Configurations defaultConf;
-    defaultConf.setToDefault();
-    defaultConf.parseFromText("*GLOBAL:\n ENABLED = false \n TO_FILE =  false \n FORMAT=%datetime{%d/%M} [%thread] %file:%line %msg");
-    el::Loggers::reconfigureLogger("default", defaultConf);
-  
+    init_log();
     UNREFERENCED_PARAMETER(argc);
     auto settings = get_local_setting();
     if (!settings)
@@ -46,7 +36,7 @@ int main(int argc, char *argv[])
     start_server(settings.get());
 
     signal(SIGINT, [](int sig) -> void {
-        std::cout << "will exit, please wait!!!!" <<std::endl;
+        std::cout << "will exit, please wait!!!!" << std::endl;
         signal(SIGINT, SIG_IGN);
         stop_server();
         LOG(INFO) << "signal " << sig << std::endl;

@@ -7,4 +7,6 @@ int start_server(client * settings);
 
 int stop_server();
 
+int init_log();
+
 #endif

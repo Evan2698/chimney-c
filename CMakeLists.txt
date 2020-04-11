@@ -7,8 +7,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 set (current_dir  ${CMAKE_CURRENT_SOURCE_DIR})
 
-set (CORE_SRCS
-  ${current_dir}/src/main.cpp
+set(ANDORID_P 0)
+if (DEFINED CMAKE_ANDROID_ARCH  )  
+  set(ANDORID_P 1)
+endif()
+
+list (APPEND CORE_SRCS 
   ${current_dir}/src/core/address.cpp
   ${current_dir}/src/core/funs.cpp
   ${current_dir}/src/core/minipool.cpp
@@ -19,6 +23,11 @@ set (CORE_SRCS
   ${current_dir}/src/core/stream.cpp
   ${current_dir}/src/core/mobile_core.cpp
 )
+
+if (ANDORID_P EQUAL  0)
+  list (APPEND CORE_SRCS 
+    ${current_dir}/src/main.cpp)
+endif()
 
 set (PRIVACY_SRCS
   ${current_dir}/src/privacy/chacha20.cpp
@@ -51,19 +60,32 @@ set (NAV_INCLUDE_DIR
 add_subdirectory(3rd/easyloggingpp)
 add_subdirectory(3rd/libsodium)
 
-  
-add_executable(chimney-c ${MAIN_SRCS})
+if (ANDORID_P EQUAL  0) 
+    add_executable(chimney-c ${MAIN_SRCS})
+else()
+    add_library(chimney-c ${MAIN_SRCS})
+endif()
+
 target_include_directories(chimney-c PRIVATE  ${NAV_INCLUDE_DIR})
-target_compile_definitions(chimney-c PRIVATE  ELPP_THREAD_SAFE  ELPP_FEATURE_ALL)
+
+target_compile_definitions(chimney-c PRIVATE
+        #ELPP_FEATURE_ALL
+        ELPP_LOGGING_FLAGS_FROM_ARG
+        #ELPP_NO_DEFAULT_LOG_FILE
+        #ELPP_FRESH_LOG_FILE
+    )
+
+list(APPEND link_LIB_TARGET 
+                          sodium 
+                          easyloggingpp )
+if(ANDORID_P EQUAL  0) 
+    list(APPEND link_LIB_TARGET 
+                          pthread)
+endif()
+
 target_link_libraries(
                        chimney-c
 
                        PRIVATE
 
-                       sodium
-
-                       pthread
-
-                       easyloggingpp
-
-                       )
+                       ${link_LIB_TARGET})

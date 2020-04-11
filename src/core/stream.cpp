@@ -106,8 +106,9 @@ int Stream::Write(const std::vector<unsigned char> &src)
 
 int Stream::Close()
 {
-    close(this->handle);
+    auto r =  close(this->handle);
     this->handle = 0;
+    return r;
 }
 
 Address Stream::get_local()

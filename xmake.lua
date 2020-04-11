@@ -106,8 +106,13 @@ target("easyloggingpp")
     set_kind("static")
     add_files("3rd/easyloggingpp/src/**.cc")
     add_includedirs("3rd/easyloggingpp/src")
-    add_defines("ELPP_THREAD_SAFE")
-    add_defines("ELPP_FEATURE_ALL")
+    add_defines("ELPP_THREAD_SAFE", 
+	             "ELPP_FRESH_LOG_FILE",
+				 "ELPP_FEATURE_ALL",
+				 "ELPP_LOGGING_FLAGS_FROM_ARG",
+				 "ELPP_NO_DEFAULT_LOG_FILE")
+ 
+
 
 target("chimney-c")
     set_kind("binary")
@@ -115,6 +120,10 @@ target("chimney-c")
     add_deps("easyloggingpp","sodium")
     add_includedirs("src/include", "3rd/rapidjson/include", "3rd/easyloggingpp/src")
     add_links("pthread")
-    add_defines("ELPP_THREAD_SAFE")
-    add_defines("ELPP_FEATURE_ALL")
+	add_defines("ELPP_THREAD_SAFE", 
+	             "ELPP_FRESH_LOG_FILE",
+				 "ELPP_FEATURE_ALL",
+				 "ELPP_LOGGING_FLAGS_FROM_ARG",
+				 "ELPP_NO_DEFAULT_LOG_FILE")
+
  

@@ -99,3 +99,17 @@ int stop_server()
 
      return 0;
 }
+
+int init_log()
+{
+    el::Configurations defaultConf;
+    defaultConf.setToDefault();
+    defaultConf.setGlobally(
+        el::ConfigurationType::Format, "%datetime[%thread]%file:%line  %msg");
+
+    //defaultConf.setGlobally(
+    //    el::ConfigurationType::Enabled, "false");
+    el::Loggers::reconfigureLogger("default", defaultConf);
+
+    return 0;
+}

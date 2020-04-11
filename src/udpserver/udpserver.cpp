@@ -139,4 +139,6 @@ int UDPServer::Run()
 
     delete[] buffer;
     close(fd);
+
+    return 0;
 }

@@ -76,6 +76,13 @@ if(ANDORID_P EQUAL  0)
                           pthread)
 endif()
 
+target_compile_definitions(chimney-c PUBLIC  
+                  ELPP_THREAD_SAFE 
+                  ELPP_FEATURE_ALL
+                  ELPP_LOGGING_FLAGS_FROM_ARG
+                  ELPP_NO_DEFAULT_LOG_FILE
+                  ELPP_FRESH_LOG_FILE)
+
 target_link_libraries(
                        chimney-c
 

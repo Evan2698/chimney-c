@@ -101,6 +101,7 @@ int SocketAssistant::set_socket_time(int fd, unsigned int time)
     tv.tv_usec = 0;
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    return 0;
 }
 
 int SocketAssistant::create_udp_listening_socket(Address a)

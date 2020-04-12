@@ -16,6 +16,9 @@
 #define UDP_READ_SIZE         3072  
 
 
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-W#warnings"
 #include <easylogging++.h>
+#pragma GCC diagnostic pop
+
 #endif 

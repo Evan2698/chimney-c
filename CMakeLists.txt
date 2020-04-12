@@ -66,14 +66,7 @@ else()
     add_library(chimney-c ${MAIN_SRCS})
 endif()
 
-target_include_directories(chimney-c PRIVATE  ${NAV_INCLUDE_DIR})
-
-target_compile_definitions(chimney-c PRIVATE
-        #ELPP_FEATURE_ALL
-        ELPP_LOGGING_FLAGS_FROM_ARG
-        #ELPP_NO_DEFAULT_LOG_FILE
-        #ELPP_FRESH_LOG_FILE
-    )
+target_include_directories(chimney-c PUBLIC  ${NAV_INCLUDE_DIR})
 
 list(APPEND link_LIB_TARGET 
                           sodium 
@@ -86,6 +79,6 @@ endif()
 target_link_libraries(
                        chimney-c
 
-                       PRIVATE
+                       PUBLIC
 
                        ${link_LIB_TARGET})

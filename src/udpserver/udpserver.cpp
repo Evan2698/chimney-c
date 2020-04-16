@@ -2,7 +2,6 @@
 #include "core/socketassistant.h"
 #include "core/g.h"
 #include "core/funs.h"
-#include "udpserver/udppack.h"
 #include "core/func.hpp"
 #include <unistd.h>
 

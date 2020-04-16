@@ -32,8 +32,8 @@ std::vector<unsigned char> Funcs::U16ToBytes(unsigned short v)
 
 unsigned short Funcs::ToShort(unsigned char *sz)
 {
-    unsigned short v = sz[1];
-    v = (v << 8) | sz[0];
+    unsigned short v = sz[0];
+    v = (v << 8) | sz[1];
 
     return v;
 }

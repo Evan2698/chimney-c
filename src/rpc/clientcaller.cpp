@@ -50,7 +50,7 @@ int client_caller::try_to_connect_callee()
               callee::get_instance().get_instance().get_port(), Address::ipv4);
     for (int i = 0; i < 3; i++)
     {
-        auto fd = SocketAssistant::create_socket(a, "tcp");
+        auto fd = SocketAssistant::create_socket_raw(a, "tcp", true);
         if (fd > 0)
         {
             callee = fd;

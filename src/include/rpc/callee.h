@@ -14,6 +14,8 @@ struct callee
 
     bool is_valid();
 
+    void set_callee(const std::string & host, unsigned short port);
+
     const std::string & get_callee();
     const unsigned short get_port();
 

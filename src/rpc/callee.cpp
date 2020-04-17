@@ -18,6 +18,12 @@ callee &callee::get_instance()
     return *g_instance;
 }
 
+ void callee::set_callee(const std::string & host, unsigned short p)
+ {
+     this->port = p;
+     this->callee_server = host;
+ }
+
 bool callee::is_valid()
 {
     return (port != 0 && !callee_server.empty());

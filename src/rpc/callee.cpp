@@ -1,13 +1,21 @@
 #include "rpc/callee.h"
+#include <mutex>
 
 callee::callee() : port(0)
 {
 }
 
+static callee *g_instance = nullptr;
+static std::mutex mx;
 callee &callee::get_instance()
 {
-    static callee lle;
-    return lle;
+    if (g_instance == nullptr){
+        std::lock_guard<std::mutex> lock(mx);
+        if (g_instance == nullptr){
+            g_instance = new callee();
+        }
+    }
+    return *g_instance;
 }
 
 bool callee::is_valid()

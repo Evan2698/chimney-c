@@ -3,14 +3,14 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "core/g.h"
-
-#ifndef __ANDROID__
-int (*g_protect_Fun)(int) = nullptr;
-#else
-extern int (*g_protect_Fun)(int);
-#endif
+#include "rpc/callerpool.h"
 
 int SocketAssistant::create_socket(Address a, const std::string &network)
+{
+    return create_socket_raw(a, network, false);
+}
+
+int SocketAssistant::create_socket_raw(Address a, const std::string &network, bool raw)
 {
     LOG(INFO) << "create_socket " << a.toString();
     struct sockaddr_in address;
@@ -31,10 +31,9 @@ int SocketAssistant::create_socket(Address a, const std::string &network)
         return -1;
     }
 
-    if (g_protect_Fun != nullptr)
+    if (!raw)
     {
-        g_protect_Fun(sock);
-        LOG(INFO) << "protect for android! " << sock << std::endl;
+        callerpool::get_instance().get_caller().call_protect_socket(sock);
     }
 
     LOG(INFO) << "create_socket "
@@ -77,11 +76,6 @@ int SocketAssistant::create_listening_socket(Address a, const std::string &netwo
         return -1;
     }
     auto fd = socket(AF_INET, SOCK_STREAM, 0);
-    /*  if (fd > 0)
-    {
-        fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
-    }*/
-
     int reuse = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     err = bind(fd, (struct sockaddr *)&address, sizeof(address));
@@ -140,7 +134,17 @@ int SocketAssistant::create_udp_listening_socket(Address a)
 
 int SocketAssistant::create_udp_connect_socket(Address a)
 {
+    return create_udp_connect_socket_raw(a, false);
+}
+
+int SocketAssistant::create_udp_connect_socket_raw(Address a, bool raw)
+{
     int server_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (!raw)
+    {
+        callerpool::get_instance().get_caller().call_protect_socket(server_fd);
+    }
+
     return server_fd;
 }
 

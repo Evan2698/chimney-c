@@ -39,15 +39,21 @@ set (PRIVACY_SRCS
 )
 
 set (UDPSERVER_SRCS
-    #${current_dir}/src/udpserver/udppack.cpp
     ${current_dir}/src/udpserver/udpserver.cpp   
    )
+
+set (RPC_SRCS
+     ${current_dir}/src/rpc/callee.cpp
+     ${current_dir}/src/rpc/callerpool.cpp
+     ${current_dir}/src/rpc/clientcaller.cpp
+)
 
 
 set (MAIN_SRCS
     ${CORE_SRCS}
     ${PRIVACY_SRCS}
     ${UDPSERVER_SRCS}
+    ${RPC_SRCS}
 )
 
 set (NAV_INCLUDE_DIR

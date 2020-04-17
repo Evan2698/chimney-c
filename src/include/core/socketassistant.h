@@ -16,6 +16,8 @@ struct SocketAssistant
 
     static int create_socket(Address a, const std::string& network);
 
+    static int create_socket_raw(Address a, const std::string& network, bool raw);
+
     static Address get_socket_local_address(int fd);
 
     static int create_listening_socket(Address a, const std::string &network);
@@ -25,6 +27,8 @@ struct SocketAssistant
     static int create_udp_listening_socket(Address a);
 
     static int create_udp_connect_socket(Address a);
+
+    static int create_udp_connect_socket_raw(Address a, bool raw);
 
     static std::optional<sockaddr_in> create_udp_connect_addr(Address a);
 };

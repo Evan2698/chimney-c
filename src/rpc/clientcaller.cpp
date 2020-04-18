@@ -79,7 +79,7 @@ int client_caller::call_protect_socket(int fd)
     {
         return -1;
     }
-
+    LOG(INFO) << "Want to Protect socket is: " << fd;
     auto param = convert_param(fd);
     auto r = send(callee, param.data(), param.size(), 0);
     if (r <= 0)
@@ -102,7 +102,7 @@ int client_caller::call_protect_socket(int fd)
     }
     r = convert_result(result);
 
-    LOG(INFO) << "Success Value" << r << std::endl;
+    LOG(INFO) << "Protect Result Value " << r << std::endl;
 
     return r;
 }

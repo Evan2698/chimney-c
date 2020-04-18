@@ -28,7 +28,7 @@ int UDPServer::Run()
         return -1;
     }
 
-    struct timeval timeout = {10, 0}; //600ms
+    struct timeval timeout = {60, 0}; //60s
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (const char *)&timeout, sizeof(timeout));
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
 
@@ -59,9 +59,12 @@ int UDPServer::Run()
                              &client_address_len);
         if (n < 1)
         {
-            LOG(ERROR) << "recv failed" << n << std::endl;
+            LOG(ERROR) << "recv failed " << n << " Error:" << errno << std::endl;
             continue;
         }
+        
+        LOG(INFO) << "RECV From local user " << n << " Bytes" << std::endl;
+
         std::vector<unsigned char> out;
         int zn = this->I->Compress(std::vector<unsigned char>(pRead, pRead + n), this->key, out);
         if (zn != 0)
@@ -95,10 +98,12 @@ int UDPServer::Run()
             continue;
         }
 
+        LOG(INFO) << "RECV from remote server  " << n << " Bytes" << std::endl;
+
         n = recvfrom(r, buffer, UDP_READ_SIZE, 0, (sockaddr *)&v, &client_len);
         if (n < 1)
         {
-            LOG(ERROR) << "recvfrom to failed" << n << std::endl;
+            LOG(ERROR) << "recvfrom to failed from remote proxy :" << n << std::endl;
             continue;
         }
 
